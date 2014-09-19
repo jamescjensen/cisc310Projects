@@ -21,7 +21,7 @@ void readCommands(char commands[]) {
 
 
 int main (int *argc, char *argv[] ) {
-    static const char commands[] = "commands.txt"; // File containing the commands
+    static const char commands[] = "input.txt"; // File containing the commands
 
     readCommands(commands);
     return 0;
