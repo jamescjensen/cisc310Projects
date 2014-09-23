@@ -42,6 +42,7 @@ struct ssd_q {
     ssd *ssds;
 };
 */
+
 void readCommands(char commands[]) {
     FILE * filePointer; // File pointer
     filePointer = fopen(commands, "r"); //opens the filename pointed to by filename using the given mode.
@@ -51,19 +52,22 @@ void readCommands(char commands[]) {
     while(!feof(filePointer)) {
         // Gets a line from the file
         fgets(line, 128, filePointer);
-        char * pch;
-        pch = strtok (line, " ");
+
+        char * pch; // TODO what is this?
+        pch = strtok (line, " "); // TODO what is this doing?
 
         while(pch != NULL) {
-
+            // TODO Be careful since it might be reading the new lines as a separate character
+            // TODO is this doing string comparison?
             if (strcmp(pch,"NEW")==0) {
-                printf("new\n");
+                printf("NEW\n");
             } else if(strcmp(pch,"CPU")== 0) {
-                printf("cpu\n");
+                printf("CPU\n");
             } else if(strcmp(pch,"INP")== 0) {
-                printf("inp\n");
+                printf("INP\n");
             }
 
+            // TODO what is this doing?
             pch = strtok (NULL, " ");
 
             if(pch != NULL) {
@@ -79,10 +83,10 @@ void readCommands(char commands[]) {
     fclose(filePointer);
 }
 
-int main (int argc, char *argv[] ) {
-    static const char commands[] = "input.txt"; // File containing the commands
-    extern struct 
-    readCommands(commands);
+int main (int argc, char *argv[]) {
+    static const char input[] = "input.txt"; // File containing the commands
+    //extern struct // TODO this was creating an compile error when not commented.
+    readCommands(input);
     return 0;
 };
 
