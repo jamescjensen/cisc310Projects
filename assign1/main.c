@@ -12,11 +12,12 @@
 #define INP 12
 
 struct process {
-    int state;
     int id;
+    int state;
     int next_index;
     int ssd_accesses;
-    int wait_time;
+    int wait_time_ssd;
+    int time_ssd;
     struct command *commands[150];
 };
 
@@ -61,6 +62,7 @@ void readCommands(char commands[]) {
             // TODO is this doing string comparison?
             if (strcmp(pch,"NEW")==0) {
                 printf("NEW\n");
+                // TODO create a new process struct
             } else if(strcmp(pch,"CPU")== 0) {
                 printf("CPU\n");
             } else if(strcmp(pch,"INP")== 0) {
@@ -81,6 +83,16 @@ void readCommands(char commands[]) {
 
     // Closing the file
     fclose(filePointer);
+}
+
+// Method that creates and initializes a struct.
+void createStruct() { // TODO some information about the process should be passed to this function.
+    static int processId = 0;
+
+    printf("%d\n", processId);
+
+
+    processId++;
 }
 
 int main (int argc, char *argv[]) {
