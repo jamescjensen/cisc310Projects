@@ -47,6 +47,7 @@ struct ssd_q {
 };
 */
 
+// TODO make it simpler
 void createNewProcess()
 {
     //printf("createNew\n");
@@ -66,6 +67,8 @@ void createNewProcess()
     */
 }
 
+
+// TODO make it simpler
 void addCommandToProcess(int name, int time)
 {
     process_table[process_ctr]->next_index++;
@@ -85,13 +88,13 @@ void readCommands(char *commands) {
     filePointer = fopen(commands, "r"); //opens the filename pointed to by filename using the given mode.
     char line[128]; // variable that holds each line that is read
     char command[10]; // command
-    char time[10]; // time or start time of command
+    int time; // time or start time of command
 
     // Run while fscanf successfully reads in 2 variables
-    while(fscanf(filePointer, "%s %s", command, time) == 2) {
+    while(fscanf(filePointer, "%s %d", command, &time) == 2) {
         int cmd_name;
 
-        printf("Command: %s\n", command);
+        printf("Command: %s ", command);
         if (strcmp(command,"NEW")==0) {
             //createNewProcess(); // TODO this creates a problem
             cmd_name = NEW;
@@ -101,6 +104,7 @@ void readCommands(char *commands) {
             cmd_name = INP;
         }
 
+        printf("Time: %d\n", time);
         //addCommandToProcess(cmd_name, atoi(time)); // TODO this creates a problem
 
     }
@@ -111,6 +115,16 @@ void readCommands(char *commands) {
 
 int main (int argc, char *argv[]) {
     char *input = "input.txt"; // File containing the commands
+
+    struct process process_table[25]; // Process Table
+    struct process cpu_1[2]; //Initialize CPU 1
+    struct process cpu_2[2]; // Initialize CPU 2
+    struct process ssd[2]; // Initialize SSD
+    struct process finish_process[25]; // Finish Process
+
+    // TODO Initialize Ready queue.
+    // TODO Initialize SSD queue.
+    // TODO Initialize Waiting queue.
 
     // Read the file with the commands.
     readCommands(input);
