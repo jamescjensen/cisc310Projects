@@ -95,13 +95,16 @@ int main (int argc, char *argv[]) {
     // TODO how was thing compiling? You cannot do for(int....
     //printf("\nballer %lu\n", sizeof(process_table[0].commands[0]));
     //printf("\n name %d time %d\n", process_table[0].commands[0].name, process_table[0].commands[0].time);
-    for(int i=0;i<process_ctr;i++) {
+
+    int i, j;
+
+    for(i=0;i<process_ctr;i++) {
         printf("PID %d\n", process_table[i].pid);
         printf("STATE %d\n", process_table[i].state);
         printf("COMMAND_INDEX %d\n", process_table[i].command_index);
         printf("SSD_ACCESS_TIME %d\n", process_table[i].ssd_accesses_time);
         printf("SSD_WAIT_TIME %d\n", process_table[i].ssd_wait_time);
-        for(int j=0;j<process_table[i].command_index;j++) {
+        for(j=0;j<process_table[i].command_index;j++) {
             printf("\tNAME %d", process_table[i].commands[j].name);
             printf("\tTIME %d\n", process_table[i].commands[j].time);
         }
