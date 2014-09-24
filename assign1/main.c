@@ -11,7 +11,6 @@
 #define INP 11
 #define CPU 12
 
-struct process *process_table[25];
 int process_ctr = 0;
 int pid_ctr = 0;
 
@@ -23,67 +22,33 @@ struct command {
 struct process {
     int pid;
     int state;
-    int next_index;
+    int command_index;
     int ssd_accesses_time;
     int ssd_wait_time;
     struct command commands[150];
 };
 
-/*
-struct ssd {
-    process *pcs;
-};
-
-struct cpu {
-    process *pcs;
-};
-
-struct cpu_q {
-    cpu *cpus;
-};
-
-struct ssd_q {
-    ssd *ssds;
-};
-*/
-
-// TODO make it simpler
-void createNewProcess()
+struct process createNewProcess()
 {
-    //printf("createNew\n");
-    process_ctr++;
-    pid_ctr++;
-    struct process *pcs;
-
-    /*
-    pcs = (struct process *) malloc(sizeof(struct process*));
-    pcs->state = READY;
-    pcs->pid = pid_ctr;
-    pcs->next_index = 0;
-    pcs->ssd_accesses = 0;
-    pcs->wait_time = 0;
-    process_table[process_ctr] = pcs;
-    //printf("%d\n", process_table[process_ctr]->pid);
-    */
+    struct process pcs;
+    pcs.state = READY;
+    pcs.pid = pid_ctr;
+    pcs.command_index = 0;
+    pcs.ssd_accesses_time = 0;
+    pcs.ssd_wait_time = 0;
+    return pcs;
 }
 
 
-// TODO make it simpler
-void addCommandToProcess(int name, int time)
+struct command addCommandToProcess(int name, int time)
 {
-    process_table[process_ctr]->next_index++;
-    int tmp = process_table[process_ctr]->next_index;
-    struct command *cmd;
-    cmd = (struct command*) malloc(sizeof(struct command*));
-    cmd->name = name;
-    cmd->time = time;
-    process_table[process_ctr]->commands[tmp] = *cmd;
-    printf("The process name is %d\n", process_table[process_ctr]->commands[tmp].name);
-    printf("The time of the process is %d\n", process_table[process_ctr]->commands[tmp].time);
+    struct command cmd;
+    cmd.name = name;
+    cmd.time = time;
+    return cmd;
 }
 
-
-void readCommands(char *commands) {
+void readCommands(char *commands, struct process process_table[]) {
     FILE * filePointer; // File pointer
     filePointer = fopen(commands, "r"); //opens the filename pointed to by filename using the given mode.
     char line[128]; // variable that holds each line that is read
@@ -93,20 +58,18 @@ void readCommands(char *commands) {
     // Run while fscanf successfully reads in 2 variables
     while(fscanf(filePointer, "%s %d", command, &time) == 2) {
         int cmd_name;
-
-        printf("Command: %s ", command);
         if (strcmp(command,"NEW")==0) {
-            //createNewProcess(); // TODO this creates a problem
+            process_table[process_ctr] = createNewProcess();
             cmd_name = NEW;
+            pid_ctr++;
+            process_ctr++;
         } else if(strcmp(command,"CPU")==0) {
             cmd_name = CPU;
         } else if(strcmp(command,"INP")==0) {
             cmd_name = INP;
         }
-
-        printf("Time: %d\n", time);
-        //addCommandToProcess(cmd_name, atoi(time)); // TODO this creates a problem
-
+        process_table[process_ctr-1].commands[process_table[process_ctr-1].command_index] = addCommandToProcess(cmd_name, time);
+        process_table[process_ctr-1].command_index++;
     }
 
     // Closing the file
@@ -127,24 +90,22 @@ int main (int argc, char *argv[]) {
     // TODO Initialize Waiting queue.
 
     // Read the file with the commands.
-    readCommands(input);
+    readCommands(input, process_table);
 
     // TODO how was thing compiling? You cannot do for(int....
-    /*
-    for(int i=1;i<process_ctr;i++) {
-        printf("%d\n", process_table[i]->pid);
-        printf("%d\n", process_table[i]->state);
-        printf("%d\n", process_table[i]->next_index);
-        printf("%d\n", process_table[i]->ssd_accesses);
-        printf("%d\n", process_table[i]->wait_time);
-            printf("sup1\n");
-        for(int j=1;j<process_table[i]->next_index;j++) {
-            printf("sup\n");
-            printf("%d\n", process_table[i]->commands[j].name);
-            printf("%d\n", process_table[i]->commands[j].time);
+    //printf("\nballer %lu\n", sizeof(process_table[0].commands[0]));
+    //printf("\n name %d time %d\n", process_table[0].commands[0].name, process_table[0].commands[0].time);
+    for(int i=0;i<process_ctr;i++) {
+        printf("PID %d\n", process_table[i].pid);
+        printf("STATE %d\n", process_table[i].state);
+        printf("COMMAND_INDEX %d\n", process_table[i].command_index);
+        printf("SSD_ACCESS_TIME %d\n", process_table[i].ssd_accesses_time);
+        printf("SSD_WAIT_TIME %d\n", process_table[i].ssd_wait_time);
+        for(int j=0;j<process_table[i].command_index;j++) {
+            printf("\tNAME %d", process_table[i].commands[j].name);
+            printf("\tTIME %d\n", process_table[i].commands[j].time);
         }
     }
-    */
     return 0;
 };
 
