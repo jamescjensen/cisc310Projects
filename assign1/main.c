@@ -21,11 +21,11 @@ struct command {
 };
 
 struct process {
-    int state;
     int pid;
+    int state;
     int next_index;
-    int ssd_accesses;
-    int wait_time;
+    int ssd_accesses_time;
+    int ssd_wait_time;
     struct command commands[150];
 };
 
@@ -53,6 +53,8 @@ void createNewProcess()
     process_ctr++;
     pid_ctr++;
     struct process *pcs;
+
+    /*
     pcs = (struct process *) malloc(sizeof(struct process*));
     pcs->state = READY;
     pcs->pid = pid_ctr;
@@ -61,6 +63,7 @@ void createNewProcess()
     pcs->wait_time = 0;
     process_table[process_ctr] = pcs;
     //printf("%d\n", process_table[process_ctr]->pid);
+    */
 }
 
 void addCommandToProcess(int name, int time)
