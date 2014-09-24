@@ -72,8 +72,8 @@ void addCommandToProcess(int name, int time)
     cmd->name = name;
     cmd->time = time;
     process_table[process_ctr]->commands[tmp] = *cmd;
-    printf("le %d\n", process_table[process_ctr]->commands[tmp].name);
-    printf("le %d\n", process_table[process_ctr]->commands[tmp].time);
+    printf("The process name is %d\n", process_table[process_ctr]->commands[tmp].name);
+    printf("The time of the process is %d\n", process_table[process_ctr]->commands[tmp].time);
 }
 
 
@@ -81,35 +81,25 @@ void readCommands(char *commands) {
     FILE * filePointer; // File pointer
     filePointer = fopen(commands, "r"); //opens the filename pointed to by filename using the given mode.
     char line[128]; // variable that holds each line that is read
+    char command[10]; // command
+    char time[10]; // time or start time of command
 
-    // File EOF. Keep reading until the file pointer reaches the end of the file
-    while(!feof(filePointer)) {
-        // Gets a line from the file
-        fgets(line, 128, filePointer);
+    // Run while fscanf successfully reads in 2 variables
+    while(fscanf(filePointer, "%s %s", command, time) == 2) {
+        int cmd_name;
 
-        char * pch; // TODO what is this?
-        pch = strtok (line, " "); // string operations
-
-        while(pch != NULL) {
-            int cmd_name;
-            if (strcmp(pch,"NEW")==0) {
-                createNewProcess();
-                cmd_name = NEW;
-            } else if(strcmp(pch,"CPU")==0) {
-                cmd_name = CPU;
-            } else if(strcmp(pch,"INP")==0) {
-                cmd_name = INP;
-            }
-
-            pch = strtok (NULL, " ");
-
-            if(pch != NULL) {
-                printf ("le number is %s\n", pch);
-                addCommandToProcess(cmd_name, atoi(pch));
-            }
-
+        printf("Command: %s\n", command);
+        if (strcmp(command,"NEW")==0) {
+            //createNewProcess(); // TODO this creates a problem
+            cmd_name = NEW;
+        } else if(strcmp(command,"CPU")==0) {
+            cmd_name = CPU;
+        } else if(strcmp(command,"INP")==0) {
+            cmd_name = INP;
         }
-        //fputs(line, stdout);
+
+        //addCommandToProcess(cmd_name, atoi(time)); // TODO this creates a problem
+
     }
 
     // Closing the file
@@ -118,8 +108,12 @@ void readCommands(char *commands) {
 
 int main (int argc, char *argv[]) {
     char *input = "input.txt"; // File containing the commands
-    //// TODO this was creating an compile error when not commented.
+
+    // Read the file with the commands.
     readCommands(input);
+
+    // TODO how was thing compiling? You cannot do for(int....
+    /*
     for(int i=1;i<process_ctr;i++) {
         printf("%d\n", process_table[i]->pid);
         printf("%d\n", process_table[i]->state);
@@ -133,6 +127,7 @@ int main (int argc, char *argv[]) {
             printf("%d\n", process_table[i]->commands[j].time);
         }
     }
+    */
     return 0;
 };
 
