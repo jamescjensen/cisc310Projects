@@ -38,27 +38,27 @@ struct process {
 //  an int counter. This is to represent CPU1, CPU2, and SSD
 
 struct cpu_1 {
-    
+
     struct process cpu1_proc;
-    
+
     int cpu1_counter;
-    
-}
+
+};
 
 struct cpu_2 {
-    
+
     struct process cpu2_proc;
-    
+
     int cpu2_counter;
-    
-}
+
+};
 
 struct ssd {
-    
+
     struct process ssd;
-    
+
     int ssd_counter;
-}
+};
 
 // TODO create a queue struct
 // TODO implement queue function (Insert an element)
@@ -191,6 +191,9 @@ int main (int argc, char *argv[])
             printf("\tNAME %d", process_table[i].commands[j].name);
             printf("\tTIME %d\n", process_table[i].commands[j].time);
         }
+
+        process_table[i].command_index = 0;
+        printf("COMMAND_INDEX %d\n", process_table[i].command_index);
     }
     // End of testing code
 
