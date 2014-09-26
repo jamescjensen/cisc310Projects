@@ -188,6 +188,9 @@ int main (int argc, char *argv[])
             printf("\tNAME %d", process_table[i].commands[j].name);
             printf("\tTIME %d\n", process_table[i].commands[j].time);
         }
+
+        process_table[i].command_index = 0;
+        printf("COMMAND_INDEX %d\n", process_table[i].command_index);
     }
 
     printf("%d\n", cpu1.counter);
