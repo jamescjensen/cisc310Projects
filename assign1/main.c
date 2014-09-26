@@ -41,7 +41,7 @@ struct hardware {
 
 // TODO create a queue struct
 struct queue {
-    struct process *procs[25];
+    struct process *procs[26];
     int nextEmpty;
 };
 
@@ -137,17 +137,34 @@ void enqueue(struct queue *q, struct process *proc) {
     q->nextEmpty = q->nextEmpty + 1;
 }
 
-/*
-struct process dequeue(struct queue *q) {
-    q.nextEmpty = q.nextEmpty - 1;
 
-    return q.procs[0];
+struct process * dequeue(struct queue *q) {
+    q->nextEmpty = q->nextEmpty - 1;
+    struct process *p = q->procs[0];
+
+    int i;
+
+    for(i = 0; i < 24; i++) {
+        q->procs[i] = q->procs[i+1];
+    }
+
+    //printf("Process after shifting %d", q->procs[0]->command_index);
+
+    return p;
 }
-*/
+
 
 // Main function
 int main (int argc, char *argv[])
 {
+
+    char p[25];
+   // p[0] = 'g';
+
+    printf("%c\n\n", p[0]);
+
+   // p[0] = NULL;
+
     char *input = "input.txt"; // File containing the commands
 
     struct process process_table[25]; // Initialize Process Table
@@ -202,7 +219,7 @@ int main (int argc, char *argv[])
             printf("\tTIME %d\n", process_table[i].commands[j].time);
         }
 
-        process_table[i].command_index = 0;
+        //process_table[i].command_index = 0;
         //printf("COMMAND_INDEX %d\n", process_table[i].command_index);
     }
 
@@ -221,6 +238,22 @@ int main (int argc, char *argv[])
     printf("process command index: %d\n", process_table[0].command_index);
     printf("Process in queue %d", ready_q.procs[0]->command_index);
     */
+    /*
+    enqueue(&ready_q, &process_table[0]);
+    printf("Next int: %d\n", ready_q.nextEmpty);
+
+    enqueue(&ready_q, &process_table[1]);
+    printf("Next int: %d\n", ready_q.nextEmpty);
+
+    printf("Command index: %d\n", dequeue(&ready_q)->command_index);
+    printf("Next int: %d\n", ready_q.nextEmpty);
+
+    printf("Command index: %d\n", ready_q.procs[0]->command_index);
+
+    printf("Command index: %d\n", dequeue(&ready_q)->command_index);
+    printf("Next int: %d\n", ready_q.nextEmpty);
+    */
+    // printf("Command index: %d", ready_q.procs[0]->command_index);
     // End of testing code
 
 
