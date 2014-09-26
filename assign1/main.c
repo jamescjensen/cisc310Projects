@@ -39,15 +39,38 @@ struct hardware {
     int counter;
 };
 
-// TODO create a queue struct
+/** Queue */
 struct queue {
     struct process *procs[26];
     int nextEmpty;
 };
 
+// Enqueue a process to the queue.
+void enqueue(struct queue *q, struct process *proc) {
+    // Add process
+    q->procs[q->nextEmpty] = proc;
 
-// TODO implement queue function (Insert an element)
-// TODO implement deque function (Remove element)
+    // Increment
+    q->nextEmpty = q->nextEmpty + 1;
+}
+
+// Dequeue and returns the process at position 0 from the queue.
+struct process * dequeue(struct queue *q) {
+    // Decrement
+    q->nextEmpty = q->nextEmpty - 1;
+
+    // Store the process in a variable
+    struct process *p = q->procs[0];
+
+    // Shifting processes to the beginning of the queue.
+    int i;
+
+    for(i = 0; i < 24; i++) {
+        q->procs[i] = q->procs[i+1];
+    }
+
+    return p;
+}
 
 // Method that creates and returns a process struct
 struct process createNewProcess()
@@ -131,44 +154,18 @@ void readCommands(char *commands, struct process process_table[])
     fclose(filePointer);
 }
 
-// Enqueue a process to the queue.
-void enqueue(struct queue *q, struct process *proc) {
-    q->procs[q->nextEmpty] = proc;
-    q->nextEmpty = q->nextEmpty + 1;
-}
-
-
-struct process * dequeue(struct queue *q) {
-    q->nextEmpty = q->nextEmpty - 1;
-    struct process *p = q->procs[0];
-
-    int i;
-
-    for(i = 0; i < 24; i++) {
-        q->procs[i] = q->procs[i+1];
-    }
-
-    //printf("Process after shifting %d", q->procs[0]->command_index);
-
-    return p;
-}
-
 
 // Main function
 int main (int argc, char *argv[])
 {
-
-    char p[25];
-   // p[0] = 'g';
-
-    printf("%c\n\n", p[0]);
-
-   // p[0] = NULL;
-
     char *input = "input.txt"; // File containing the commands
 
-    struct process process_table[25]; // Initialize Process Table
-    struct process finish_process[25]; // Initialize Finish Process
+    // Initialize Process Table
+    struct process process_table[25];
+
+    // Initialize Finish Process
+    struct process finish_process[25];
+
 
     // Initialize CPU 1
     struct hardware cpu1;
@@ -183,29 +180,29 @@ int main (int argc, char *argv[])
     ssd.counter = 0;
 
 
-    // TODO Initialize Ready queue.
+    // Initialize Ready queue.
     struct queue ready_q;
     ready_q.nextEmpty = 0;
 
+    // Initialize SSD queue.
+    struct queue ssd_q;
+    ssd_q.nextEmpty = 0;
 
-    // TODO Initialize SSD queue.
-    // TODO Initialize Waiting queue.
+    // Initialize Waiting queue.
+    struct queue wait_q;
+    wait_q.nextEmpty = 0;
+
+
 
     // Read the file with the commands.
     readCommands(input, process_table);
 
-    // TODO besides adding the newly created processes to the process_table, which
-    // is done in the readCommands function, we need to add them to the Ready queue.
-    // This step needs to be implemented. You can do it here, inside readCommands,
-    // or implement a separate function. Make your choice.
-
     // TODO add processes to Ready queue
 
-    // Testing code to check if the process were created correctly
 
+    // Testing code to check if the process were created correctly
     int i, j;
 
-    // Reseting the command_index of each process to 0;
     for(i=0;i<process_ctr;i++) {
 
         printf("PID %d\n", process_table[i].pid);
@@ -219,8 +216,12 @@ int main (int argc, char *argv[])
             printf("\tTIME %d\n", process_table[i].commands[j].time);
         }
 
-        //process_table[i].command_index = 0;
-        //printf("COMMAND_INDEX %d\n", process_table[i].command_index);
+        printf("\n");
+    }
+
+    // Reseting the command_index of each process to 0;
+    for(i=0;i<process_ctr;i++) {
+        process_table[i].command_index = 0;
     }
 
     /*
@@ -252,9 +253,9 @@ int main (int argc, char *argv[])
 
     printf("Command index: %d\n", dequeue(&ready_q)->command_index);
     printf("Next int: %d\n", ready_q.nextEmpty);
+
+    printf("Command index: %d", ready_q.procs[0]->command_index);
     */
-    // printf("Command index: %d", ready_q.procs[0]->command_index);
-    // End of testing code
 
 
     // TODO Implement main logic
