@@ -153,7 +153,14 @@ int main (int argc, char *argv[])
     // Initialize CPU 1
     struct hardware cpu1;
     cpu1.counter = 0;
-    cpu1.proc;
+
+    // Initialize CPU 2
+    struct hardware cpu2;
+    cpu2.counter = 0;
+
+    // Initialize SSD
+    struct hardware ssd;
+    ssd.counter = 0;
     /*
     struct process cpu_2[2]; // Initialize CPU 2
     struct process ssd[2]; // Initialize SSD
