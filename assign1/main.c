@@ -37,6 +37,29 @@ struct process {
 // TODO create a struct (You can pick the name) that would have 2 variables: a process struct and
 //  an int counter. This is to represent CPU1, CPU2, and SSD
 
+struct cpu_1 {
+    
+    struct process cpu1_proc;
+    
+    int cpu1_counter;
+    
+}
+
+struct cpu_2 {
+    
+    struct process cpu2_proc;
+    
+    int cpu2_counter;
+    
+}
+
+struct ssd {
+    
+    struct process ssd;
+    
+    int ssd_counter;
+}
+
 // TODO create a queue struct
 // TODO implement queue function (Insert an element)
 // TODO implement deque function (Remove element)
