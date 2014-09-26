@@ -33,32 +33,25 @@ struct process {
     struct command commands[150];
 };
 
+/** CPU and hardware struct */
+struct hardware {
+    struct process proc;
+    int counter;
+};
 
-// TODO create a struct (You can pick the name) that would have 2 variables: a process struct and
-//  an int counter. This is to represent CPU1, CPU2, and SSD
-
-struct cpu_1 {
-    
-    struct process cpu1_proc;
-    
-    int cpu1_counter;
-    
-}
-
+/*
 struct cpu_2 {
-    
     struct process cpu2_proc;
-    
+
     int cpu2_counter;
-    
-}
+};
 
 struct ssd {
-    
     struct process ssd;
-    
+
     int ssd_counter;
-}
+};
+*/
 
 // TODO create a queue struct
 // TODO implement queue function (Insert an element)
@@ -157,10 +150,14 @@ int main (int argc, char *argv[])
     struct process process_table[25]; // Initialize Process Table
     struct process finish_process[25]; // Initialize Finish Process
 
-    // TODO make these a struct with 2 variables. 1 is a struct process; 2 is an int counter
-    struct process cpu_1[2]; // Initialize CPU 1
+    // Initialize CPU 1
+    struct hardware cpu1;
+    cpu1.counter = 0;
+    cpu1.proc;
+    /*
     struct process cpu_2[2]; // Initialize CPU 2
     struct process ssd[2]; // Initialize SSD
+    */
 
     // TODO have to implement a queue struct.
     // TODO Initialize Ready queue.
@@ -192,6 +189,9 @@ int main (int argc, char *argv[])
             printf("\tTIME %d\n", process_table[i].commands[j].time);
         }
     }
+
+    printf("%d\n", cpu1.counter);
+    printf("%d", sizeof(cpu1.proc));
     // End of testing code
 
 
