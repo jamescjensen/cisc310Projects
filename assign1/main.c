@@ -39,21 +39,13 @@ struct hardware {
     int counter;
 };
 
-/*
-struct cpu_2 {
-    struct process cpu2_proc;
-
-    int cpu2_counter;
-};
-
-struct ssd {
-    struct process ssd;
-
-    int ssd_counter;
-};
-*/
-
 // TODO create a queue struct
+struct queue {
+    struct process *procs[25];
+    int nextEmpty;
+};
+
+
 // TODO implement queue function (Insert an element)
 // TODO implement deque function (Remove element)
 
@@ -137,10 +129,21 @@ void readCommands(char *commands, struct process process_table[])
 
     // Close the file
     fclose(filePointer);
-
-    // TODO go through all the processes created reseting the command_index to 0.
-
 }
+
+// Enqueue a process to the queue.
+void enqueue(struct queue *q, struct process *proc) {
+    q->procs[q->nextEmpty] = proc;
+    q->nextEmpty = q->nextEmpty + 1;
+}
+
+/*
+struct process dequeue(struct queue *q) {
+    q.nextEmpty = q.nextEmpty - 1;
+
+    return q.procs[0];
+}
+*/
 
 // Main function
 int main (int argc, char *argv[])
@@ -161,13 +164,13 @@ int main (int argc, char *argv[])
     // Initialize SSD
     struct hardware ssd;
     ssd.counter = 0;
-    /*
-    struct process cpu_2[2]; // Initialize CPU 2
-    struct process ssd[2]; // Initialize SSD
-    */
 
-    // TODO have to implement a queue struct.
+
     // TODO Initialize Ready queue.
+    struct queue ready_q;
+    ready_q.nextEmpty = 0;
+
+
     // TODO Initialize SSD queue.
     // TODO Initialize Waiting queue.
 
@@ -182,9 +185,12 @@ int main (int argc, char *argv[])
     // TODO add processes to Ready queue
 
     // Testing code to check if the process were created correctly
+
     int i, j;
 
+    // Reseting the command_index of each process to 0;
     for(i=0;i<process_ctr;i++) {
+
         printf("PID %d\n", process_table[i].pid);
         printf("STATE %d\n", process_table[i].state);
         printf("COMMAND_INDEX %d\n", process_table[i].command_index);
@@ -197,11 +203,24 @@ int main (int argc, char *argv[])
         }
 
         process_table[i].command_index = 0;
-        printf("COMMAND_INDEX %d\n", process_table[i].command_index);
+        //printf("COMMAND_INDEX %d\n", process_table[i].command_index);
     }
 
+    /*
     printf("%d\n", cpu1.counter);
     printf("%d", sizeof(cpu1.proc));
+    */
+    /*
+    enqueue(&ready_q, &process_table[0]);
+
+    printf("process command index: %d\n", process_table[0].command_index);
+    printf("Process in queue %d\n", ready_q.procs[0]->command_index);
+
+    process_table[0].command_index = 848;
+
+    printf("process command index: %d\n", process_table[0].command_index);
+    printf("Process in queue %d", ready_q.procs[0]->command_index);
+    */
     // End of testing code
 
 
