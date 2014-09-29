@@ -180,6 +180,7 @@ void readCommands(char *commands, struct process process_table[])
 
         // Increment the command index
         process_table[process_ctr-1].command_index++;
+        process_table[process_ctr-1].total_commands++;
     }
 
     // Close the file
@@ -227,6 +228,7 @@ int main (int argc, char *argv[])
     readCommands(input, process_table);
 
     // TODO add processes to Ready queue
+         // TODO move_to_READY(struc process *p) // READY
 
 
     // Testing code to check if the process were created correctly
@@ -237,6 +239,7 @@ int main (int argc, char *argv[])
         printf("PID %d\n", process_table[i].pid);
         printf("STATE %d\n", process_table[i].state);
         printf("COMMAND_INDEX %d\n", process_table[i].command_index);
+        printf("TOTAL_COMMANDS %d\n", process_table[i].total_commands);
         printf("SSD_ACCESS_TIME %d\n", process_table[i].ssd_accesses_time);
         printf("SSD_WAIT_TIME %d\n", process_table[i].ssd_wait_time);
 
