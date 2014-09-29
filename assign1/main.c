@@ -34,73 +34,98 @@ struct process {
     struct command commands[150];
 };
 
-/** CPU and hardware struct */
+/** CPU and SSD struct */
 struct hardware {
-    struct process proc;
+    int pid;
     int counter;
+    int busy;
 };
 
 /** Queue */
 struct queue {
-    struct process *procs[26];
+    int pid[26];
     int nextEmpty;
 };
 
 // Enqueue a process to the queue.
-void enqueue(struct queue *q, struct process *proc) {
+void enqueue(struct queue *q, int pid) {
     // Add process
-    q->procs[q->nextEmpty] = proc;
+    q->pid[q->nextEmpty] = pid;
 
     // Increment
     q->nextEmpty = q->nextEmpty + 1;
 }
 
 // Dequeue and returns the process at position 0 from the queue.
-struct process * dequeue(struct queue *q) {
+int dequeue(struct queue *q) {
     // Decrement
     q->nextEmpty = q->nextEmpty - 1;
 
     // Store the process in a variable
-    struct process *p = q->procs[0];
+    int pid = q->pid[0];
 
     // Shifting processes to the beginning of the queue.
     int i;
 
     for(i = 0; i < 24; i++) {
-        q->procs[i] = q->procs[i+1];
+        q->pid[i] = q->pid[i+1];
     }
 
-    return p;
+    return pid;
 }
 
-void move_to_WAITING(struct queue *io, struct process *proc)
+void move_to_WAITING(struct queue *io, int pid, struct process process_table[])
 {
     // Set state to waiting
-    proc->state = WAITING;
+    int i = 0;
+
+    while(process_table[i].pid != pid) {
+        i++;
+    }
+
+    process_table[i].state = WAITING;
 
     // Add process
-    io->procs[io->nextEmpty] = proc;
+    io->pid[io->nextEmpty] = pid;
 
     // Increment
     io->nextEmpty = io->nextEmpty + 1;
 
     // Sort by IO duration
-    int i, j;
-    struct process *p;
+    int j, process_id;
+    //struct process *p;
 
     for (i = 0; i < io->nextEmpty; ++i)
     {
         for (j = i + 1; j < io->nextEmpty; ++j)
         {
-            if (io->procs[i]->commands[io->procs[i]->command_index].time > io->procs[j]->commands[io->procs[i]->command_index].time)
+            if (process_table[i].commands->time > process_table[j].commands->time)
             {
-                p =  io->procs[i];
-                io->procs[i] = io->procs[j];
-                io->procs[j] = p;
+                process_id =  io->pid[i];
+                io->pid[i] = io->pid[j];
+                io->pid[j] = process_id;
             }
         }
     }
 
+}
+
+void move_to_READY(struct queue *ready,  int pid, struct process process_table[])
+{
+    // Set state to ready
+    int i = 0;
+
+    while(process_table[i].pid != pid) {
+        i++;
+    }
+
+    process_table[i].state = READY;
+
+    // Add process
+    ready->pid[ready->nextEmpty] = pid;
+
+    // Increment
+    ready->nextEmpty = ready->nextEmpty + 1;
 }
 
 // Method that creates and returns a process struct
@@ -202,18 +227,21 @@ int main (int argc, char *argv[])
     // Initialize CPU 1
     struct hardware cpu1;
     cpu1.counter = 0;
+    cpu1.busy = 0;
 
     // Initialize CPU 2
     struct hardware cpu2;
     cpu2.counter = 0;
+    cpu2.busy = 0;
 
     // Initialize SSD
     struct hardware ssd;
     ssd.counter = 0;
+    ssd.busy = 0;
 
     // Initialize IO queue
-    struct queue io;
-    io.nextEmpty = 0;
+    struct queue io_q;
+    io_q.nextEmpty = 0;
 
     // Initialize Ready queue.
     struct queue ready_q;
@@ -256,6 +284,18 @@ int main (int argc, char *argv[])
         process_table[i].total_commands = process_table[i].command_index - 1;
         process_table[i].command_index = 0;
     }
+
+    enqueue(&ssd_q, process_table[2].pid);
+    enqueue(&ssd_q, process_table[0].pid);
+
+    printf("Process in ssd_q: %d\n", ssd_q.pid[0]);
+    printf("Process in ssd_q: %d\n", ssd_q.pid[1]);
+
+    printf("Dequeue %d\n", dequeue(&ssd_q));
+    printf("Process in ssd_q: %d\n", ssd_q.pid[0]);
+
+
+
 
 
     /*
@@ -322,16 +362,13 @@ int main (int argc, char *argv[])
     // TODO remember this from the projetct description: "If multiple requests are made at the
     // same time you should allocate (1) CPU, (2) SSD, and (3) INP"
 
-    // TODO move_to_CPU(struct process *p) // RUNNING
+    // TODO move_to_CPU(pid) // RUNNING
 
-    // TODO move_to_SSD(struct process *p) // RUNNING
+    // TODO move_to_SSD(pid) // RUNNING
 
-    // TODO move_to_FINISHED(struct process *p) // FINISHED
+    // TODO move_to_FINISHED(pid) // FINISHED
 
-    // TODO move_to_READY(struc process *p) // READY
-
-    // TODO move_to_SSD(struct process *p) // RUNNING
-
+    // TODO move_to_SSD(pid) // RUNNING
 
     // TODO remove_IO();
 
