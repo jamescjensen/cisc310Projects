@@ -73,8 +73,11 @@ struct process * dequeue(struct queue *q) {
     return p;
 }
 
-void addProcessIO(struct queue *io, struct process *proc)
+void move_to_WAITING(struct queue *io, struct process *proc)
 {
+    // Set state to waiting
+    proc->state = WAITING;
+
     // Add process
     io->procs[io->nextEmpty] = proc;
 
@@ -207,7 +210,7 @@ int main (int argc, char *argv[])
     struct hardware ssd;
     ssd.counter = 0;
 
-    // Initialize Waiting queue
+    // Initialize IO queue
     struct queue io;
     io.nextEmpty = 0;
 
@@ -251,16 +254,26 @@ int main (int argc, char *argv[])
         process_table[i].command_index = 0;
     }
 
-    /*
-    addProcessIO(&io, &process_table[2]);
-    addProcessIO(&io, &process_table[1]);
-    addProcessIO(&io, &process_table[0]);
-    addProcessIO(&io, &process_table[1]);
-    addProcessIO(&io, &process_table[0]);
 
-    for(i=0; i < 5; i++)
+    /*
+    move_to_WAITING(&io, &process_table[2]);
+    move_to_WAITING(&io, &process_table[0]);
+    move_to_WAITING(&io, &process_table[1]);
+
+
+    for(i=0; i < 3; i++)
     {
-        printf("%d\n", io.procs[i]->commands[io.procs[i]->command_index].time);
+        printf("Time %d\n", io.procs[i]->commands[io.procs[i]->command_index].time);
+        printf("State in IO %d\n", io.procs[i]->state);
+    }
+
+     for(i=0;i<process_ctr;i++) {
+
+        printf("PID %d\n", process_table[i].pid);
+        printf("STATE %d\n", process_table[i].state);
+
+
+        printf("\n");
     }
     */
 
@@ -305,6 +318,19 @@ int main (int argc, char *argv[])
 
     // TODO remember this from the projetct description: "If multiple requests are made at the
     // same time you should allocate (1) CPU, (2) SSD, and (3) INP"
+
+    // TODO move_to_CPU(struct process *p) // RUNNING
+
+    // TODO move_to_SSD(struct process *p) // RUNNING
+
+    // TODO move_to_FINISHED(struct process *p) // FINISHED
+
+    // TODO move_to_READY(struc process *p) // READY
+
+    // TODO move_to_SSD(struct process *p) // RUNNING
+
+
+    // TODO remove_IO();
 
 
     // Finish program
