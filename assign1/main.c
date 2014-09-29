@@ -23,11 +23,12 @@ struct command {
     int time;
 };
 
-/** Command struct */
+/** Process struct */
 struct process {
     int pid;
     int state;
     int command_index;
+    int total_commands;
     int ssd_accesses_time;
     int ssd_wait_time;
     struct command commands[150];
@@ -72,6 +73,33 @@ struct process * dequeue(struct queue *q) {
     return p;
 }
 
+void addProcessIO(struct queue *io, struct process *proc)
+{
+    // Add process
+    io->procs[io->nextEmpty] = proc;
+
+    // Increment
+    io->nextEmpty = io->nextEmpty + 1;
+
+    // Sort by IO duration
+    int i, j;
+    struct process *p;
+
+    for (i = 0; i < io->nextEmpty; ++i)
+    {
+        for (j = i + 1; j < io->nextEmpty; ++j)
+        {
+            if (io->procs[i]->commands[io->procs[i]->command_index].time > io->procs[j]->commands[io->procs[i]->command_index].time)
+            {
+                p =  io->procs[i];
+                io->procs[i] = io->procs[j];
+                io->procs[j] = p;
+            }
+        }
+    }
+
+}
+
 // Method that creates and returns a process struct
 struct process createNewProcess()
 {
@@ -84,6 +112,7 @@ struct process createNewProcess()
     pcs.command_index = 0;
     pcs.ssd_accesses_time = 0;
     pcs.ssd_wait_time = 0;
+    pcs.total_commands = 0;
 
     // Return the struct
     return pcs;
@@ -166,7 +195,6 @@ int main (int argc, char *argv[])
     // Initialize Finish Process
     struct process finish_process[25];
 
-
     // Initialize CPU 1
     struct hardware cpu1;
     cpu1.counter = 0;
@@ -179,6 +207,9 @@ int main (int argc, char *argv[])
     struct hardware ssd;
     ssd.counter = 0;
 
+    // Initialize Waiting queue
+    struct queue io;
+    io.nextEmpty = 0;
 
     // Initialize Ready queue.
     struct queue ready_q;
@@ -187,11 +218,6 @@ int main (int argc, char *argv[])
     // Initialize SSD queue.
     struct queue ssd_q;
     ssd_q.nextEmpty = 0;
-
-    // Initialize Waiting queue.
-    struct queue wait_q;
-    wait_q.nextEmpty = 0;
-
 
 
     // Read the file with the commands.
@@ -219,10 +245,24 @@ int main (int argc, char *argv[])
         printf("\n");
     }
 
-    // Reseting the command_index of each process to 0;
+    // Setting the total commands and reseting the command_index of each process to 0;
     for(i=0;i<process_ctr;i++) {
+        process_table[i].total_commands = process_table[i].command_index - 1;
         process_table[i].command_index = 0;
     }
+
+    /*
+    addProcessIO(&io, &process_table[2]);
+    addProcessIO(&io, &process_table[1]);
+    addProcessIO(&io, &process_table[0]);
+    addProcessIO(&io, &process_table[1]);
+    addProcessIO(&io, &process_table[0]);
+
+    for(i=0; i < 5; i++)
+    {
+        printf("%d\n", io.procs[i]->commands[io.procs[i]->command_index].time);
+    }
+    */
 
     /*
     printf("%d\n", cpu1.counter);
