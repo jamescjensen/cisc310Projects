@@ -59,17 +59,18 @@ void enqueue(struct queue *q, int pid) {
 }
 */
 
+// Enqueue a process to the queue.
 struct queue enqueue(struct queue q, int pid)
 {
-    struct queue queue = q;
+    struct queue new_queue = q;
 
     // Add process
-    queue.pid[queue.nextEmpty] = pid;
+    new_queue.pid[new_queue.nextEmpty] = pid;
 
     // Increment
-    queue.nextEmpty = q.nextEmpty + 1;
+    new_queue.nextEmpty = new_queue.nextEmpty + 1;
 
-    return queue;
+    return new_queue;
 };
 
 // Dequeue and returns the process at position 0 from the queue.
@@ -90,8 +91,9 @@ int dequeue(struct queue *q) {
     return pid;
 }
 
-void move_to_WAITING_INPUT(struct queue *io, int pid, struct process process_table[])
+struct queue move_to_WAITING_INPUT(struct queue io, int pid, struct process process_table[])
 {
+    struct queue new_queue = io;
     // Set state to waiting
     int i = 0;
 
@@ -102,31 +104,33 @@ void move_to_WAITING_INPUT(struct queue *io, int pid, struct process process_tab
     process_table[i].state = WAITING;
 
     // Add process
-    io->pid[io->nextEmpty] = pid;
+    new_queue.pid[new_queue.nextEmpty] = pid;
 
     // Increment
-    io->nextEmpty = io->nextEmpty + 1;
+    new_queue.nextEmpty = new_queue.nextEmpty + 1;
 
     // Sort by IO duration
     int j, process_id;
     //struct process *p;
 
-    for (i = 0; i < io->nextEmpty; ++i)
+    for (i = 0; i < new_queue.nextEmpty; ++i)
     {
-        for (j = i + 1; j < io->nextEmpty; ++j)
+        for (j = i + 1; j < new_queue.nextEmpty; ++j)
         {
             if (process_table[i].commands->time > process_table[j].commands->time)
             {
-                process_id =  io->pid[i];
-                io->pid[i] = io->pid[j];
-                io->pid[j] = process_id;
+                process_id =  new_queue.pid[i];
+                new_queue.pid[i] = new_queue.pid[j];
+                new_queue.pid[j] = process_id;
             }
         }
     }
 
+    return new_queue;
+
 }
 
-/*
+
 void check_SSD(struct hardware *ssd, struct process process_table[], struct hardware *cpu1, struct hardware *cpu2, struct queue *ready_q, struct queue *io_q)
 {
     // Increment command
@@ -141,8 +145,6 @@ void check_SSD(struct hardware *ssd, struct process process_table[], struct hard
     // Execute new command
     if(p.commands[p.command_index].name == CPU) {
         // Try to send to CPU
-        cpu1->busy = 1;
-        cpu2->busy = 1;
         if(cpu1->busy == 0) {
             printf("Put in cpu 1\n");
             cpu1->busy = 1;
@@ -170,12 +172,14 @@ void check_SSD(struct hardware *ssd, struct process process_table[], struct hard
         } else {
             printf("Put in READY queue\n");
 
-            enqueue(&ready_q, ssd->pid);
+            struct queue q = *ready_q;
+            *ready_q = enqueue(q, ssd->pid);
 
             process_table[ssd->pid].state = READY;
 
             printf("READY Q next empty: %d\n", ready_q->nextEmpty);
-            printf("READY Q process: %d\n", process_table[ready_q->pid[ready_q->nextEmpty-1]].state);
+            printf("READY Q pid: %d\n", process_table[ready_q->pid[ready_q->nextEmpty-1]].pid);
+            printf("READY Q process state: %d\n", process_table[ready_q->pid[ready_q->nextEmpty-1]].state);
         }
 
         // Removing process from SSD
@@ -186,7 +190,8 @@ void check_SSD(struct hardware *ssd, struct process process_table[], struct hard
     } else if(p.commands[p.command_index].name == INP) {
         printf("Put in INP queue\n");
 
-        move_to_WAITING_INPUT(&io_q, ssd->pid, process_table);
+        struct queue io = *io_q;
+        *io_q = move_to_WAITING_INPUT(io, ssd->pid, process_table);
         process_table[ssd->pid].state = WAITING;
 
         printf("Process in io_priority q: %d\n", io_q->pid[io_q->nextEmpty-1]);
@@ -210,7 +215,7 @@ void check_SSD(struct hardware *ssd, struct process process_table[], struct hard
     // Go to SSD and fetch next process
 
 }
-*/
+
 
 /*
 void move_to_READY(struct queue *ready,  int pid, struct process process_table[])
@@ -415,19 +420,26 @@ int main (int argc, char *argv[])
         printf("Process in SSD state: %d\n", process_table[ssd.pid].state);
         printf("Process in SSD command index: %d\n\n", process_table[ssd.pid].command_index);
 
-       // check_SSD(&ssd, process_table, &cpu1, &cpu2, &ready_q, &io_q);
+        check_SSD(&ssd, process_table, &cpu1, &cpu2, &ready_q, &io_q);
 
-       io_q = enqueue(io_q, process_table[2].pid);
+        printf("\nCPU1 pid: %d\n", cpu1.pid);
+        printf("CPU1 process command index: %d\n", process_table[cpu1.pid].command_index);
+        printf("CPU1 busy: %d\n", cpu1.busy);
+        printf("CPU1 finish: %d\n\n", cpu1.finish_time);
 
+        printf("\nCPU2 pid: %d\n", cpu2.pid);
+        printf("CPU2 process command index: %d\n", process_table[cpu2.pid].command_index);
+        printf("CPU2 busy: %d\n", cpu2.busy);
+        printf("CPU2 finish: %d\n\n", cpu2.finish_time);
 
+        printf("CPU queue: %d\n", ready_q.pid[ready_q.nextEmpty-1]);
+        printf("CPU queue next command index: %d\n", process_table[ready_q.pid[ready_q.nextEmpty-1]].command_index);
+        printf("CPU queue next: %d\n\n", ready_q.nextEmpty);
 
-        printf("\nINP queue: %d\n", io_q.pid[io_q.nextEmpty-1]);
-        printf("\nINP queue next: %d\n", io_q.nextEmpty);
-        //printf("SSD ssd busy: %d\n", ssd.busy);
-        //printf("Process in SSD state: %d\n", process_table[ssd.pid].state);
-        //printf("Process in SSD command index: %d\n\n", process_table[ssd.pid].command_index);
+        printf("INP queue pid: %d\n", io_q.pid[io_q.nextEmpty-1]);
+        printf("INP queue process command index: %d\n\n", process_table[io_q.pid[io_q.nextEmpty-1]].command_index);
 
-        printf("\nSSD pid: %d\n", ssd.pid);
+        printf("SSD pid: %d\n", ssd.pid);
         printf("SSD ssd busy: %d\n", ssd.busy);
         printf("Process in SSD state: %d\n", process_table[ssd.pid].state);
         printf("Process in SSD command index: %d\n\n", process_table[ssd.pid].command_index);
