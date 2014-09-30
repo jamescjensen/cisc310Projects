@@ -37,8 +37,8 @@ struct process {
 /** CPU and SSD struct */
 struct hardware {
     int pid;
-    int counter;
-    int busy;
+    int busy; // If the hardware is being used or not.
+    int finish_time; // The global time when the process will be done using that hardware. If start time of process is 120 and it uses the CPU for 15, the finish_time should be 135.
 };
 
 /** Queue */
@@ -74,7 +74,7 @@ int dequeue(struct queue *q) {
     return pid;
 }
 
-void move_to_WAITING(struct queue *io, int pid, struct process process_table[])
+void move_to_WAITING_INPUT(struct queue *io, int pid, struct process process_table[])
 {
     // Set state to waiting
     int i = 0;
@@ -110,6 +110,7 @@ void move_to_WAITING(struct queue *io, int pid, struct process process_table[])
 
 }
 
+/*
 void move_to_READY(struct queue *ready,  int pid, struct process process_table[])
 {
     // Set state to ready
@@ -127,9 +128,10 @@ void move_to_READY(struct queue *ready,  int pid, struct process process_table[]
     // Increment
     ready->nextEmpty = ready->nextEmpty + 1;
 }
+*/
 
 // Method that creates and returns a process struct
-struct process createNewProcess()
+struct process create_new_process()
 {
     // Create a process struct
     struct process pcs;
@@ -147,7 +149,7 @@ struct process createNewProcess()
 }
 
 // Method that creates a command
-struct command createCommand(int name, int time)
+struct command create_command(int name, int time)
 {
     // Create command struct
     struct command cmd;
@@ -161,7 +163,7 @@ struct command createCommand(int name, int time)
 }
 
 // Reads the input file and creates a process.
-void readCommands(char *commands, struct process process_table[])
+void read_commands(char *commands, struct process process_table[])
 {
     FILE * filePointer; // File pointer
     filePointer = fopen(commands, "r"); // Opens the filename pointed to by commands using the given mode.
@@ -177,7 +179,7 @@ void readCommands(char *commands, struct process process_table[])
         // Parsing the commands
         if (strcmp(command,"NEW")==0) {
             // Create process
-            process_table[process_ctr] = createNewProcess();
+            process_table[process_ctr] = create_new_process();
             cmd_name = NEW;
 
             // Increment process id
@@ -201,7 +203,7 @@ void readCommands(char *commands, struct process process_table[])
 
         // Access the process table and get the created process. Access the commands array of that
         // process at position of the command index. Create a command in that position.
-        process_table[process_ctr-1].commands[process_table[process_ctr-1].command_index] = createCommand(cmd_name, time);
+        process_table[process_ctr-1].commands[process_table[process_ctr-1].command_index] = create_command(cmd_name, time);
 
         // Increment the command index
         process_table[process_ctr-1].command_index++;
@@ -226,20 +228,17 @@ int main (int argc, char *argv[])
 
     // Initialize CPU 1
     struct hardware cpu1;
-    cpu1.counter = 0;
     cpu1.busy = 0;
 
     // Initialize CPU 2
     struct hardware cpu2;
-    cpu2.counter = 0;
     cpu2.busy = 0;
 
     // Initialize SSD
     struct hardware ssd;
-    ssd.counter = 0;
     ssd.busy = 0;
 
-    // Initialize IO queue
+    // Initialize IO priority queue
     struct queue io_q;
     io_q.nextEmpty = 0;
 
@@ -253,10 +252,15 @@ int main (int argc, char *argv[])
 
 
     // Read the file with the commands.
-    readCommands(input, process_table);
+    read_commands(input, process_table);
 
-    // TODO add processes to Ready queue
-         // TODO move_to_READY(struc process *p) // READY
+
+    // Setting the total commands and reseting the command_index of each process to 0;
+    for(i=0;i<process_ctr;i++) {
+        process_table[i].total_commands = process_table[i].command_index - 1;
+        process_table[i].command_index = 0;
+    }
+
 
 
     // Testing code to check if the process were created correctly
@@ -279,25 +283,39 @@ int main (int argc, char *argv[])
         printf("\n");
     }
 
-    // Setting the total commands and reseting the command_index of each process to 0;
-    for(i=0;i<process_ctr;i++) {
-        process_table[i].total_commands = process_table[i].command_index - 1;
-        process_table[i].command_index = 0;
-    }
 
-    enqueue(&ssd_q, process_table[2].pid);
-    enqueue(&ssd_q, process_table[0].pid);
+    // TODO Implement main logic
 
-    printf("Process in ssd_q: %d\n", ssd_q.pid[0]);
-    printf("Process in ssd_q: %d\n", ssd_q.pid[1]);
+    // TODO Main loop that checks CPU1, CPU2, SSD, INP, PROCESS_TABLE
 
-    printf("Dequeue %d\n", dequeue(&ssd_q));
-    printf("Process in ssd_q: %d\n", ssd_q.pid[0]);
+        // TODO check if all processes are FINISHED
+
+        // TODO CPU1() // State: RUNNING // WILL
+            // Remove current process, meaning that set the struct to not busy
+            // Execute its next command and place in corresponding struct, queue, or array
+            // Go to READY queue and fetch the next command
+
+        // TODO CPU2() // State: RUNNING // WILL
+            // Remove current process, meaning that set the struct to not busy
+            // Execute its next command and place in corresponding struct, queue, or array
+            // Go to READY queue and fetch the next command
+
+        // TODO SSD() // State: WAITING // MIGUEL
+            // Remove current process, meaning that set the struct to not busy
+            // Execute its next command and place in corresponding struct, queue, or array
+            // Go to SSD queue and fetch the next command
+
+        // TODO INP() // State: WAITING // ANDREW
+            // Remove current process from the priority queue IO
+            // Execute its next command and place in corresponding CPU or SSD. If not possible, put int CPU_queue or SSD_queue
+
+        // TODO PROCESS_TABLE() // State: RUNNING(If it can put process in CPU) or READY(If it cannot put process in CPU) // ANNE
+            // Put process in CPU or READY_q
+
+        // TODO move_to_FINISHED(pid) // FINISHED
 
 
-
-
-
+    // TODO Loop through the process table printing the information about each process // JIMMY
     /*
     move_to_WAITING(&io, &process_table[2]);
     move_to_WAITING(&io, &process_table[0]);
@@ -354,23 +372,6 @@ int main (int argc, char *argv[])
     */
 
 
-    // TODO Implement main logic
-
-    // TODO create a "currentCalls" array that will hold the calls that need to be executed in the
-    // current time stamp. This is just one way of implementing it. There might other ways.
-
-    // TODO remember this from the projetct description: "If multiple requests are made at the
-    // same time you should allocate (1) CPU, (2) SSD, and (3) INP"
-
-    // TODO move_to_CPU(pid) // RUNNING
-
-    // TODO move_to_SSD(pid) // RUNNING
-
-    // TODO move_to_FINISHED(pid) // FINISHED
-
-    // TODO move_to_SSD(pid) // RUNNING
-
-    // TODO remove_IO();
 
 
     // Finish program
