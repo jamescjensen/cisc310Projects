@@ -13,6 +13,8 @@
 #define CPU 12
 #define SSD 13
 
+#define NULL_VALUE 256
+
 /** Global variables */
 int process_ctr = 0;
 int pid_ctr = 0;
@@ -68,7 +70,8 @@ struct queue enqueue(struct queue q, int pid)
 };
 
 // Dequeue and returns the process at position 0 from the queue.
-int dequeue(struct queue *q) {
+int dequeue(struct queue *q)
+{
     // Decrement
     q->nextEmpty = q->nextEmpty - 1;
 
@@ -82,9 +85,10 @@ int dequeue(struct queue *q) {
         q->pid[i] = q->pid[i+1];
     }
 
-    //printf("IS QUEUE EMPTY?: %d", q->pid[0] == NULL);
-    // Make it busy
-    //new_queue.busy = 1;
+    if(q->pid[0] == NULL_VALUE) {
+        printf("QUEUE is empty\n");
+        q->busy = 0;
+    }
 
     return pid;
 }
@@ -389,15 +393,32 @@ int main (int argc, char *argv[])
     io_q.nextEmpty = 0;
     io_q.busy = 0;
 
+    // Setting NULL values
+    int x;
+
+    for(x = 0; x < 26; x++) {
+        io_q.pid[x] = NULL_VALUE;
+    }
+
     // Initialize Ready queue.
     struct queue ready_q;
     ready_q.nextEmpty = 0;
     ready_q.busy = 0;
 
+    // Setting NULL values
+    for(x = 0; x < 26; x++) {
+        ready_q.pid[x] = NULL_VALUE;
+    }
+
     // Initialize SSD queue.
     struct queue ssd_q;
     ssd_q.nextEmpty = 0;
     ssd_q.busy = 0;
+
+    // Setting NULL values
+    for(x = 0; x < 26; x++) {
+        ssd_q.pid[x] = NULL_VALUE;
+    }
 
 
     // Read the file with the commands.
@@ -430,10 +451,6 @@ int main (int argc, char *argv[])
     }
 
 
-
-
-
-
     // TODO Implement main logic
 
     // TODO Main loop that checks CPU1, CPU2, SSD, INP, PROCESS_TABLE
@@ -451,7 +468,7 @@ int main (int argc, char *argv[])
             // Go to READY queue and fetch the next command
 
         // TODO SSD()  // MIGUEL
-        /*
+
         ssd.pid = 2;
         ssd.busy = 1;
         ssd.finish_time = 125;
@@ -460,7 +477,7 @@ int main (int argc, char *argv[])
         process_table[ssd.pid].state = WAITING;
 
 
-        ssd_q = enqueue(ssd_q, 1);
+        //ssd_q = enqueue(ssd_q, 1);
 
         printf("SSD pid: %d\n", ssd.pid);
         printf("Process in SSD state: %d\n", process_table[ssd.pid].state);
@@ -489,7 +506,7 @@ int main (int argc, char *argv[])
         printf("SSD ssd busy: %d\n", ssd.busy);
         printf("Process in SSD state: %d\n", process_table[ssd.pid].state);
         printf("Process in SSD command index: %d\n\n", process_table[ssd.pid].command_index);
-        */
+
 
             // Remove current process, meaning that set the struct to not busy
             // Execute its next command and place in corresponding struct, queue, or array
