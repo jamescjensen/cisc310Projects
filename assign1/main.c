@@ -16,6 +16,7 @@
 /** Global variables */
 int process_ctr = 0;
 int pid_ctr = 0;
+int global_time = 0;
 
 /** Command struct */
 struct command {
@@ -47,6 +48,7 @@ struct queue {
     int nextEmpty;
 };
 
+/*
 // Enqueue a process to the queue.
 void enqueue(struct queue *q, int pid) {
     // Add process
@@ -55,6 +57,20 @@ void enqueue(struct queue *q, int pid) {
     // Increment
     q->nextEmpty = q->nextEmpty + 1;
 }
+*/
+
+struct queue enqueue(struct queue q, int pid)
+{
+    struct queue queue = q;
+
+    // Add process
+    queue.pid[queue.nextEmpty] = pid;
+
+    // Increment
+    queue.nextEmpty = q.nextEmpty + 1;
+
+    return queue;
+};
 
 // Dequeue and returns the process at position 0 from the queue.
 int dequeue(struct queue *q) {
@@ -109,6 +125,92 @@ void move_to_WAITING_INPUT(struct queue *io, int pid, struct process process_tab
     }
 
 }
+
+/*
+void check_SSD(struct hardware *ssd, struct process process_table[], struct hardware *cpu1, struct hardware *cpu2, struct queue *ready_q, struct queue *io_q)
+{
+    // Increment command
+    process_table[ssd->pid].command_index++;
+
+    printf("Process command index: %d\n", process_table[ssd->pid].command_index);
+
+    struct process p = process_table[ssd->pid];
+
+    printf("Process next command: %d\n", p.commands[p.command_index].name);
+
+    // Execute new command
+    if(p.commands[p.command_index].name == CPU) {
+        // Try to send to CPU
+        cpu1->busy = 1;
+        cpu2->busy = 1;
+        if(cpu1->busy == 0) {
+            printf("Put in cpu 1\n");
+            cpu1->busy = 1;
+            cpu1->pid = ssd->pid;
+            cpu1->finish_time = global_time + p.commands[p.command_index].time;
+
+            process_table[ssd->pid].state = RUNNING;
+
+            printf("CPU1 pid: %d\n", cpu1->pid);
+            printf("CPU1 busy: %d\n", cpu1->busy);
+            printf("CPU1 finish: %d\n", cpu1->finish_time);
+
+        } else if(cpu2->busy == 0) {
+            printf("Put in cpu 2\n");
+            cpu2->busy = 1;
+            cpu2->pid = ssd->pid;
+            cpu2->finish_time = global_time + p.commands[p.command_index].time;
+
+            process_table[ssd->pid].state = RUNNING;
+
+            printf("CPU2 pid: %d\n", cpu2->pid);
+            printf("CPU2 busy: %d\n", cpu2->busy);
+            printf("CPU2 finish: %d\n", cpu2->finish_time);
+
+        } else {
+            printf("Put in READY queue\n");
+
+            enqueue(&ready_q, ssd->pid);
+
+            process_table[ssd->pid].state = READY;
+
+            printf("READY Q next empty: %d\n", ready_q->nextEmpty);
+            printf("READY Q process: %d\n", process_table[ready_q->pid[ready_q->nextEmpty-1]].state);
+        }
+
+        // Removing process from SSD
+        ssd->busy = 0;
+        ssd->pid = -1;
+        ssd->finish_time = -1;
+
+    } else if(p.commands[p.command_index].name == INP) {
+        printf("Put in INP queue\n");
+
+        move_to_WAITING_INPUT(&io_q, ssd->pid, process_table);
+        process_table[ssd->pid].state = WAITING;
+
+        printf("Process in io_priority q: %d\n", io_q->pid[io_q->nextEmpty-1]);
+        printf("Process state in io_priority q: %d\n", process_table[io_q->pid[io_q->nextEmpty-1]].state);
+
+        // Removing process from SSD
+        ssd->busy = 0;
+        ssd->pid = -1;
+        ssd->finish_time = -1;
+
+    } else if(p.commands[p.command_index].name == SSD) {
+        printf("Put in SSD\n");
+        process_table[ssd->pid].state = WAITING;
+        ssd->finish_time = global_time + p.commands[p.command_index].time;
+
+        printf("SSD pid: %d\n", ssd->pid);
+        printf("SSD busy: %d\n", ssd->busy);
+        printf("SDD finish: %d\n", ssd->finish_time);
+    }
+
+    // Go to SSD and fetch next process
+
+}
+*/
 
 /*
 void move_to_READY(struct queue *ready,  int pid, struct process process_table[])
@@ -254,15 +356,6 @@ int main (int argc, char *argv[])
     // Read the file with the commands.
     read_commands(input, process_table);
 
-
-    // Setting the total commands and reseting the command_index of each process to 0;
-    for(i=0;i<process_ctr;i++) {
-        process_table[i].total_commands = process_table[i].command_index - 1;
-        process_table[i].command_index = 0;
-    }
-
-
-
     // Testing code to check if the process were created correctly
     int i, j;
 
@@ -283,6 +376,16 @@ int main (int argc, char *argv[])
         printf("\n");
     }
 
+    // Setting the total commands and reseting the command_index of each process to 0;
+    for(i=0;i<process_ctr;i++) {
+        process_table[i].total_commands = process_table[i].command_index - 1;
+        process_table[i].command_index = 0;
+    }
+
+
+
+
+
 
     // TODO Implement main logic
 
@@ -301,6 +404,35 @@ int main (int argc, char *argv[])
             // Go to READY queue and fetch the next command
 
         // TODO SSD() // State: WAITING // MIGUEL
+        ssd.pid = 2;
+        ssd.busy = 1;
+        ssd.finish_time = 125;
+
+        process_table[ssd.pid].command_index = 4;
+        process_table[ssd.pid].state = WAITING;
+
+        printf("SSD pid: %d\n", ssd.pid);
+        printf("Process in SSD state: %d\n", process_table[ssd.pid].state);
+        printf("Process in SSD command index: %d\n\n", process_table[ssd.pid].command_index);
+
+       // check_SSD(&ssd, process_table, &cpu1, &cpu2, &ready_q, &io_q);
+
+       io_q = enqueue(io_q, process_table[2].pid);
+
+
+
+        printf("\nINP queue: %d\n", io_q.pid[io_q.nextEmpty-1]);
+        printf("\nINP queue next: %d\n", io_q.nextEmpty);
+        //printf("SSD ssd busy: %d\n", ssd.busy);
+        //printf("Process in SSD state: %d\n", process_table[ssd.pid].state);
+        //printf("Process in SSD command index: %d\n\n", process_table[ssd.pid].command_index);
+
+        printf("\nSSD pid: %d\n", ssd.pid);
+        printf("SSD ssd busy: %d\n", ssd.busy);
+        printf("Process in SSD state: %d\n", process_table[ssd.pid].state);
+        printf("Process in SSD command index: %d\n\n", process_table[ssd.pid].command_index);
+
+
             // Remove current process, meaning that set the struct to not busy
             // Execute its next command and place in corresponding struct, queue, or array
             // Go to SSD queue and fetch the next command
