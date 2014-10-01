@@ -139,6 +139,36 @@ struct queue move_to_WAITING_INPUT(struct queue io, int pid, struct process proc
 
 }
 
+void clear_hardware(struct hardware *hw)
+{
+    hw->pid = 0;
+    hw->busy = 0;
+    hw->finish_time = 0;
+    hw->busy_time = 0;
+}
+
+//this removes process from the hardware and returns the pid
+int get_process_from_hardware(struct hardware *hw, struct process process_table[])
+{
+    //have to store in local variable or it will go away
+    int hw_pid = hw->pid;
+    
+    clear_hardware(hw);
+
+    if(process_table[hw->pid].command_index == process_table[hw->pid].total_commands) {
+        process_table[hw->pid].state = FINISHED;
+        finished_processes++;
+    }
+
+    return hw_pid;
+}
+
+//this increments to the next command and then returns the next command
+int get_next_command_in_process(int pid, struct process process_table[])
+{
+    process_table[pid].command_index++;
+    return process_table[pid].commands[process_table[pid].command_index];
+}
 
 void check_SSD(struct hardware *ssd, struct process process_table[], struct hardware *cpu1, struct hardware *cpu2, struct queue *ready_q, struct queue *io_q, struct queue *ssd_q)
 {
