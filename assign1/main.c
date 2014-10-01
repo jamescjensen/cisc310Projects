@@ -19,6 +19,10 @@
 int process_ctr = 0;
 int pid_ctr = 0;
 int global_time = 0;
+int finished_processes = 0;
+int zero_cores_time = 0;
+int one_core_time = 0;
+int two_cores_time = 0;
 
 /** Command struct */
 struct command {
@@ -32,8 +36,10 @@ struct process {
     int state;
     int command_index;
     int total_commands;
-    int ssd_accesses_time;
+    int ssd_access_counter;
+    int ssd_usage_time;
     int ssd_wait_time;
+    int ssd_entry_time;
     struct command commands[150];
 };
 
@@ -42,6 +48,7 @@ struct hardware {
     int pid;
     int busy; // If the hardware is being used or not.
     int finish_time; // The global time when the process will be done using that hardware. If start time of process is 120 and it uses the CPU for 15, the finish_time should be 135.
+    int busy_time;
 };
 
 /** Queue */
@@ -86,7 +93,6 @@ int dequeue(struct queue *q)
     }
 
     if(q->pid[0] == NULL_VALUE) {
-        printf("QUEUE is empty\n");
         q->busy = 0;
     }
 
@@ -139,12 +145,40 @@ void check_SSD(struct hardware *ssd, struct process process_table[], struct hard
     // Increment command
     process_table[ssd->pid].command_index++;
     printf("\n\n\nSSD process command index: %d\n", process_table[ssd->pid].command_index);
+    printf("SSD process total commands: %d\n", process_table[ssd->pid].total_commands);
 
     struct process p = process_table[ssd->pid];
     printf("SSD process next command: %d\n", p.commands[p.command_index].name);
 
-    // Execute new command
-    if(p.commands[p.command_index].name == CPU) {
+    if(p.command_index == p.total_commands) {
+        // Put in finished array
+        printf("Done with this process\n");
+        process_table[ssd->pid].state = FINISHED;
+
+        finished_processes++;
+
+        if(ssd_q->busy == 1) {
+            printf("SSD QUEUE HAS SOMETHING\n");
+            // Fetching the new process to the SSD
+            ssd->busy = 1;
+            ssd->pid = dequeue(ssd_q);
+            ssd->finish_time = global_time + process_table[ssd->pid].commands[process_table[ssd->pid].command_index].time;
+
+            // Updating summary info of this new process, now in SSD
+            process_table[ssd->pid].state = WAITING;
+            process_table[ssd->pid].ssd_access_counter = process_table[ssd->pid].ssd_access_counter + 1;
+            process_table[ssd->pid].ssd_usage_time = process_table[ssd->pid].ssd_usage_time + process_table[ssd->pid].commands[process_table[ssd->pid].command_index].time;
+            process_table[ssd->pid].ssd_wait_time = process_table[ssd->pid].ssd_wait_time + (global_time - process_table[ssd->pid].ssd_entry_time);
+
+        } else {
+            printf("SSD QUEUE IS EMPTY\n");
+            // Removing process from SSD
+            ssd->busy = 0;
+            ssd->pid = -1;
+            ssd->finish_time = -1;
+        }
+
+    } else if(p.commands[p.command_index].name == CPU) { // Execute new command
         // Try to send to CPU
         if(cpu1->busy == 0) {
             // Put SSD process in CPU 1
@@ -195,10 +229,13 @@ void check_SSD(struct hardware *ssd, struct process process_table[], struct hard
             // Fetching the new process to the SSD
             ssd->busy = 1;
             ssd->pid = dequeue(ssd_q);
-            ssd->finish_time = global_time + p.commands[p.command_index].time;
+            ssd->finish_time = global_time + process_table[ssd->pid].commands[process_table[ssd->pid].command_index].time;
 
             // Setting the state of that new process, now in SSD, as WAITING
             process_table[ssd->pid].state = WAITING;
+            process_table[ssd->pid].ssd_access_counter = process_table[ssd->pid].ssd_access_counter + 1;
+            process_table[ssd->pid].ssd_usage_time = process_table[ssd->pid].ssd_usage_time + process_table[ssd->pid].commands[process_table[ssd->pid].command_index].time;
+            process_table[ssd->pid].ssd_wait_time = process_table[ssd->pid].ssd_wait_time + (global_time - process_table[ssd->pid].ssd_entry_time);
 
         } else {
             printf("SSD QUEUE IS EMPTY\n");
@@ -229,10 +266,13 @@ void check_SSD(struct hardware *ssd, struct process process_table[], struct hard
             // Fetching the new process to the SSD
             ssd->busy = 1;
             ssd->pid = dequeue(ssd_q);
-            ssd->finish_time = global_time + p.commands[p.command_index].time;
+            ssd->finish_time = global_time + process_table[ssd->pid].commands[process_table[ssd->pid].command_index].time;
 
             // Setting the state of that new process, now in SSD, as WAITING
             process_table[ssd->pid].state = WAITING;
+            process_table[ssd->pid].ssd_access_counter = process_table[ssd->pid].ssd_access_counter + 1;
+            process_table[ssd->pid].ssd_usage_time = process_table[ssd->pid].ssd_usage_time + process_table[ssd->pid].commands[process_table[ssd->pid].command_index].time;
+            process_table[ssd->pid].ssd_wait_time = process_table[ssd->pid].ssd_wait_time + (global_time - process_table[ssd->pid].ssd_entry_time);
 
         } else {
             printf("SSD QUEUE IS EMPTY\n");
@@ -251,6 +291,9 @@ void check_SSD(struct hardware *ssd, struct process process_table[], struct hard
 
         // Update the finish time
         ssd->finish_time = global_time + p.commands[p.command_index].time;
+
+        process_table[ssd->pid].ssd_access_counter = process_table[ssd->pid].ssd_access_counter + 1;
+        process_table[ssd->pid].ssd_usage_time = process_table[ssd->pid].ssd_usage_time + process_table[ssd->pid].commands[process_table[ssd->pid].command_index].time;
 
         printf("SSD pid: %d\n", ssd->pid);
         printf("SSD busy: %d\n", ssd->busy);
@@ -287,12 +330,14 @@ struct process create_new_process()
     struct process pcs;
 
     // Initialize the variables in that process
-    pcs.state = READY;
     pcs.pid = pid_ctr;
+    pcs.state = READY;
     pcs.command_index = 0;
-    pcs.ssd_accesses_time = 0;
-    pcs.ssd_wait_time = 0;
     pcs.total_commands = 0;
+    pcs.ssd_access_counter = 0;
+    pcs.ssd_usage_time = 0;
+    pcs.ssd_wait_time = 0;
+    pcs.ssd_entry_time = 0;
 
     // Return the struct
     return pcs;
@@ -373,8 +418,10 @@ int main (int argc, char *argv[])
     // Initialize Process Table
     struct process process_table[25];
 
+    /*
     // Initialize Finish Process
-    struct process finish_process[25];
+    int finish_process[25];
+    */
 
     // Initialize CPU 1
     struct hardware cpu1;
@@ -433,8 +480,10 @@ int main (int argc, char *argv[])
         printf("STATE %d\n", process_table[i].state);
         printf("COMMAND_INDEX %d\n", process_table[i].command_index);
         printf("TOTAL_COMMANDS %d\n", process_table[i].total_commands);
-        printf("SSD_ACCESS_TIME %d\n", process_table[i].ssd_accesses_time);
+        printf("SSD_ACCESS_COUNTER %d\n", process_table[i].ssd_access_counter);
+        printf("SSD_USAGE_TIME %d\n", process_table[i].ssd_usage_time);
         printf("SSD_WAIT_TIME %d\n", process_table[i].ssd_wait_time);
+        printf("SSD_ENTRY_TIME %d\n", process_table[i].ssd_entry_time);
 
         for(j=0;j<process_table[i].command_index;j++) {
             printf("\tNAME %d", process_table[i].commands[j].name);
@@ -446,7 +495,7 @@ int main (int argc, char *argv[])
 
     // Setting the total commands and reseting the command_index of each process to 0;
     for(i=0;i<process_ctr;i++) {
-        process_table[i].total_commands = process_table[i].command_index - 1;
+        process_table[i].total_commands = process_table[i].command_index;
         process_table[i].command_index = 0;
     }
 
@@ -504,7 +553,7 @@ int main (int argc, char *argv[])
 
         printf("SSD pid: %d\n", ssd.pid);
         printf("SSD ssd busy: %d\n", ssd.busy);
-        printf("Process in SSD state: %d\n", process_table[ssd.pid].state);
+        printf("Process in SSD state: %d\n", process_table[ssd.pid].pid);
         printf("Process in SSD command index: %d\n\n", process_table[ssd.pid].command_index);
 
 
