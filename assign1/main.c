@@ -473,6 +473,7 @@ int main (int argc, char *argv[])
 
                 // Increment command index
 
+
                 printf("CPU1 pid: %d\n", cpu1.pid);
                 printf("CPU1 busy: %d\n", cpu1.busy);
                 printf("CPU1 finish time: %d\n", cpu1.finish_time);
