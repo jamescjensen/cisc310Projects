@@ -266,11 +266,6 @@ int main (int argc, char *argv[])
     // Initialize Process Table
     struct process process_table[25];
 
-    /*
-    // Initialize Finish Process
-    int finish_process[25];
-    */
-
     // Initialize CPU 1
     struct hardware cpu1;
     cpu1.busy = 0;
@@ -413,37 +408,43 @@ int main (int argc, char *argv[])
         }
     }
 
-    // TODO Main loop that checks CPU1, CPU2, SSD, INP, PROCESS_TABLE
-
-        // TODO check if all processes are FINISHED
-
-        // TODO CPU1() // State: RUNNING // WILL
-            // Remove current process, meaning that set the struct to not busy
-            // Execute its next command and place in corresponding struct, queue, or array
-            // Go to READY queue and fetch the next command
-
-        // TODO CPU2() // State: RUNNING // WILL
-            // Remove current process, meaning that set the struct to not busy
-            // Execute its next command and place in corresponding struct, queue, or array
-            // Go to READY queue and fetch the next command
-
-        // TODO SSD()  // MIGUEL
-            // Remove current process, meaning that set the struct to not busy
-            // Execute its next command and place in corresponding struct, queue, or array
-            // Go to SSD queue and fetch the next command
-
-        // TODO INP() // State: WAITING // ANDREW
-            // Remove current process from the priority queue IO
-            // Execute its next command and place in corresponding CPU or SSD. If not possible, put int CPU_queue or SSD_queue
-
-        // TODO PROCESS_TABLE() // State: RUNNING(If it can put process in CPU) or READY(If it cannot put process in CPU) // ANNE
-            // Put process in CPU or READY_q
-
-        // TODO move_to_FINISHED(pid) // FINISHED
 
 
-    // TODO Loop through the process table printing the information about each process // JIMMY
+    // Put process from queue to hardware
+    if(cpu1.busy) {
+        if(ready_q.busy) {
+            cpu1.pid = dequeue(&ready_q);
+            cpu1.busy = 1;
+            cpu1.finish_time = global_time + process_table[cpu1.pid].commands[process_table[cpu1.pid].command_index].time;
 
+            process_table[cpu1.pid].command_index++;
+        }
+
+        printf("CPU1 pid: %d", cpu1.pid);
+        printf("CPU1 busy: %d", cpu1.busy);
+        printf("CPU1 busy: %d", cpu1.busy);
+    }
+
+    if(cpu2.busy) {
+         if(ready_q.busy) {
+            cpu2.pid = dequeue(&ready_q);
+            cpu2.busy = 1;
+            cpu2.finish_time = global_time + process_table[cpu2.pid].commands[process_table[cpu2.pid].command_index].time;
+
+            process_table[cpu2.pid].command_index++;
+        }
+    }
+
+    if(ssd.busy) {
+        if(ssd_q.busy) {
+            ssd.pid = dequeue(&ready_q);
+            ssd.busy = 1;
+            ssd.finish_time = global_time + process_table[ssd.pid].commands[process_table[ssd.pid].command_index].time;
+
+            process_table[ssd.pid].command_index++;
+
+        }
+    }
 
 
 
