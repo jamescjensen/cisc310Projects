@@ -348,30 +348,36 @@ int main (int argc, char *argv[])
 
     while(finished_processes < process_ctr){
         /////////////// Check minimum end time ///////////////
+
+        // Check cpu1
         if(cpu1.busy) {
             if(cpu1.finish_time < minFinishTime) {
                 minFinishTime = cpu1.finish_time;
             }
         }
 
+        // Check cpu2
         if(cpu2.busy) {
             if(cpu2.finish_time < minFinishTime) {
                 minFinishTime = cpu2.finish_time;
             }
         }
 
+        // Check ssd
         if(ssd.busy) {
             if(ssd.finish_time < minFinishTime) {
                 minFinishTime = ssd.finish_time;
             }
         }
 
+        // Check INP queue
         if(io_q.busy) {
             if(io_q.pid[0] < minFinishTime) {
                 minFinishTime = io_q.pid[0];
             }
         }
 
+        // Check if create a new process
         if(next_new_process < process_ctr) {
             if(process_table[next_new_process].commands[0].time < minFinishTime) {
                 minFinishTime = process_table[next_new_process].commands[0].time;
@@ -382,31 +388,38 @@ int main (int argc, char *argv[])
         global_time = minFinishTime;
 
 
+
         /////////////// Free up hardware, io queue, and new process ///////////////
+
+        // Free cpu1
         if(cpu1.busy) {
             if(cpu1.finish_time == minFinishTime) {
     //            execute_next_command(get_process_from_hardware(&cpu1), &process_table, &io_q, &ssd_q, &rdy_q);
             }
         }
 
+        // Free cpu2
         if(cpu2.busy) {
             if(cpu2.finish_time == minFinishTime) {
     //            execute_next_command(get_process_from_hardware(&cpu2), &process_table, &io_q, &ssd_q, &rdy_q);
             }
         }
 
+        // Free ssd
         if(ssd.busy) {
             if(ssd.finish_time == minFinishTime) {
     //            execute_next_command(get_process_from_hardware(&ssd), &process_table, &io_q, &ssd_q, &rdy_q);
             }
         }
 
+        // Dequeue from INP queue
         if(io_q.busy) {
             if(io_q.pid[0] == minFinishTime) {
     //            execute_next_command(dequeue(&io_q), &process_table, &io_q, &ssd_q, &rdy_q);
             }
         }
 
+        // Creating a new process
         if(next_new_process < process_ctr) {
             if(process_table[next_new_process].commands[0].time == minFinishTime) {
     //            execute_next_command(next_new_process, &process_table, &io_q, &ssd_q, &rdy_q);
@@ -416,15 +429,20 @@ int main (int argc, char *argv[])
 
 
 
-        // Put process from queue to hardware
+        /////////////// Put process from queue to hardware ///////////////
+
+        // Check if cpu1 is busy
         if(cpu1.busy == 0) {
+            // Check if ready q has something
             if(ready_q.busy) {
                 printf("Process_table[cpu1.pid].command_index++: %d",  process_table[cpu1.pid].command_index);
 
+                // Add to cpu1
                 cpu1.pid = dequeue(&ready_q);
                 cpu1.busy = 1;
                 cpu1.finish_time = global_time + process_table[cpu1.pid].commands[process_table[cpu1.pid].command_index].time;
 
+                // Increment command index
                 process_table[cpu1.pid].command_index++;
                 printf("Process_table[cpu1.pid].command_index++: %d",  process_table[cpu1.pid].command_index);
             }
@@ -434,14 +452,18 @@ int main (int argc, char *argv[])
             printf("CPU1 finish time: %d", cpu1.finish_time);
         }
 
+        // Check if cpu2 is busy
         if(cpu2.busy == 0) {
+            // Check if ready q has something
              if(ready_q.busy) {
                 printf("Process_table[cpu2.pid].command_index++: %d",  process_table[cpu2.pid].command_index);
 
+                // Add to cpu2
                 cpu2.pid = dequeue(&ready_q);
                 cpu2.busy = 1;
                 cpu2.finish_time = global_time + process_table[cpu2.pid].commands[process_table[cpu2.pid].command_index].time;
 
+                // Increment command index
                 process_table[cpu2.pid].command_index++;
                 printf("Process_table[cpu2.pid].command_index++: %d",  process_table[cpu2.pid].command_index);
 
@@ -452,17 +474,20 @@ int main (int argc, char *argv[])
             printf("CPU2 finish time: %d", cpu2.finish_time);
         }
 
+        // Check if ssd is busy
         if(ssd.busy == 0) {
+            // Check if ssd q has something
             if(ssd_q.busy) {
                 printf("Process_table[ssd.pid].command_index++: %d",  process_table[ssd.pid].command_index);
 
+                // Add to cpu2
                 ssd.pid = dequeue(&ready_q);
                 ssd.busy = 1;
                 ssd.finish_time = global_time + process_table[ssd.pid].commands[process_table[ssd.pid].command_index].time;
 
+                // Increment command index
                 process_table[ssd.pid].command_index++;
                 printf("Process_table[ssd.pid].command_index++: %d",  process_table[ssd.pid].command_index);
-
 
             }
 
