@@ -49,7 +49,6 @@ struct hardware {
     int pid;
     int busy; // If the hardware is being used or not.
     int finish_time; // The global time when the process will be done using that hardware. If start time of process is 120 and it uses the CPU for 15, the finish_time should be 135.
-    int busy_time;
 };
 
 /** Queue */
@@ -142,10 +141,9 @@ struct queue move_to_WAITING_INPUT(struct queue io, int pid, struct process proc
 
 void clear_hardware(struct hardware *hw)
 {
-    hw->pid = 0;
+    hw->pid = -1;
     hw->busy = 0;
-    hw->finish_time = 0;
-    hw->busy_time = 0;
+    hw->finish_time = -1;
 }
 
 //this removes process from the hardware and returns the pid
@@ -347,9 +345,7 @@ int main (int argc, char *argv[])
         process_table[i].command_index = 0;
     }
 
-
-    // TODO Implement main logic
-
+    // Calculate minimum finish time
     int minFinishTime = 9999999;
 
     if(cpu1.busy) {
