@@ -456,11 +456,12 @@ int main (int argc, char *argv[])
                 // Increment command index
                 process_table[cpu1.pid].command_index++;
                 printf("Process_table[cpu1.pid].command_index++: %d\n",  process_table[cpu1.pid].command_index);
+
+                printf("CPU1 pid: %d\n", cpu1.pid);
+                printf("CPU1 busy: %d\n", cpu1.busy);
+                printf("CPU1 finish time: %d\n", cpu1.finish_time);
             }
 
-            printf("CPU1 pid: %d\n", cpu1.pid);
-            printf("CPU1 busy: %d\n", cpu1.busy);
-            printf("CPU1 finish time: %d\n", cpu1.finish_time);
         }
 
         // Check if cpu2 is busy
@@ -478,11 +479,11 @@ int main (int argc, char *argv[])
                 process_table[cpu2.pid].command_index++;
                 printf("Process_table[cpu2.pid].command_index++: %d\n",  process_table[cpu2.pid].command_index);
 
+                printf("CPU2 pid: %d\n", cpu2.pid);
+                printf("CPU2 busy: %d\n", cpu2.busy);
+                printf("CPU2 finish time: %d\n", cpu2.finish_time);
             }
 
-            printf("CPU2 pid: %d\n", cpu2.pid);
-            printf("CPU2 busy: %d\n", cpu2.busy);
-            printf("CPU2 finish time: %d\n", cpu2.finish_time);
         }
 
         // Check if ssd is busy
@@ -500,11 +501,11 @@ int main (int argc, char *argv[])
                 process_table[ssd.pid].command_index++;
                 printf("Process_table[ssd.pid].command_index++: %d\n",  process_table[ssd.pid].command_index);
 
+                printf("SSD pid: %d\n", ssd.pid);
+                printf("SSD busy: %d\n", ssd.busy);
+                printf("SSD finish time: %d\n", ssd.finish_time);
             }
 
-            printf("SSD pid: %d\n", ssd.pid);
-            printf("SSD busy: %d\n", ssd.busy);
-            printf("SSD finish time: %d\n", ssd.finish_time);
         }
 
         printf("Current Time: %d\n", global_time);
