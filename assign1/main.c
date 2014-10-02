@@ -411,39 +411,58 @@ int main (int argc, char *argv[])
 
 
     // Put process from queue to hardware
-    if(cpu1.busy) {
+    if(cpu1.busy == 0) {
         if(ready_q.busy) {
+            printf("Process_table[cpu1.pid].command_index++: %d",  process_table[cpu1.pid].command_index);
+
             cpu1.pid = dequeue(&ready_q);
             cpu1.busy = 1;
             cpu1.finish_time = global_time + process_table[cpu1.pid].commands[process_table[cpu1.pid].command_index].time;
 
             process_table[cpu1.pid].command_index++;
+            printf("Process_table[cpu1.pid].command_index++: %d",  process_table[cpu1.pid].command_index);
         }
 
         printf("CPU1 pid: %d", cpu1.pid);
         printf("CPU1 busy: %d", cpu1.busy);
-        printf("CPU1 busy: %d", cpu1.busy);
+        printf("CPU1 finish time: %d", cpu1.finish_time);
     }
 
-    if(cpu2.busy) {
+    if(cpu2.busy == 0) {
          if(ready_q.busy) {
+            printf("Process_table[cpu2.pid].command_index++: %d",  process_table[cpu2.pid].command_index);
+
             cpu2.pid = dequeue(&ready_q);
             cpu2.busy = 1;
             cpu2.finish_time = global_time + process_table[cpu2.pid].commands[process_table[cpu2.pid].command_index].time;
 
             process_table[cpu2.pid].command_index++;
+            printf("Process_table[cpu2.pid].command_index++: %d",  process_table[cpu2.pid].command_index);
+
         }
+
+        printf("CPU2 pid: %d", cpu2.pid);
+        printf("CPU2 busy: %d", cpu2.busy);
+        printf("CPU2 finish time: %d", cpu2.finish_time);
     }
 
-    if(ssd.busy) {
+    if(ssd.busy == 0) {
         if(ssd_q.busy) {
+            printf("Process_table[ssd.pid].command_index++: %d",  process_table[ssd.pid].command_index);
+
             ssd.pid = dequeue(&ready_q);
             ssd.busy = 1;
             ssd.finish_time = global_time + process_table[ssd.pid].commands[process_table[ssd.pid].command_index].time;
 
             process_table[ssd.pid].command_index++;
+            printf("Process_table[ssd.pid].command_index++: %d",  process_table[ssd.pid].command_index);
+
 
         }
+
+        printf("SSD pid: %d", ssd.pid);
+        printf("SSD busy: %d", ssd.busy);
+        printf("SSD finish time: %d", ssd.finish_time);
     }
 
 
