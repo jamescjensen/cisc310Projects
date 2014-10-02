@@ -382,6 +382,36 @@ int main (int argc, char *argv[])
         }
     }
 
+    if(cpu1.busy) {
+        if(cpu1.finish_time == minFinishTime) {
+//            execute_next_command(get_process_from_hardware(&cpu1), &process_table, &io_q, &ssd_q, &rdy_q);
+        }
+    }
+
+    if(cpu2.busy) {
+        if(cpu2.finish_time == minFinishTime) {
+//            execute_next_command(get_process_from_hardware(&cpu2), &process_table, &io_q, &ssd_q, &rdy_q);
+        }
+    }
+
+    if(ssd.busy) {
+        if(ssd.finish_time == minFinishTime) {
+//            execute_next_command(get_process_from_hardware(&ssd), &process_table, &io_q, &ssd_q, &rdy_q);
+        }
+    }
+
+    if(io_q.busy) {
+        if(io_q.pid[0] == minFinishTime) {
+//            execute_next_command(dequeue(&io_q), &process_table, &io_q, &ssd_q, &rdy_q);
+        }
+    }
+
+    if(next_new_process < process_ctr) {
+        if(process_table[next_new_process].commands[0].time == minFinishTime) {
+//            execute_next_command(next_new_process, &process_table, &io_q, &ssd_q, &rdy_q);
+//            next_new_process = next_new_process + 1;
+        }
+    }
     // TODO Main loop that checks CPU1, CPU2, SSD, INP, PROCESS_TABLE
 
         // TODO check if all processes are FINISHED
