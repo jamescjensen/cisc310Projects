@@ -164,12 +164,23 @@ int get_process_from_hardware(struct hardware *hw, struct process process_table[
     return hw_pid;
 }
 
-////this increments to the next command and then returns the next command
-//int get_next_command_in_process(int pid, struct process process_table[])
-//{
-//    process_table[pid].command_index++;
-//    return process_table[pid].commands[process_table[pid].command_index];
-//}
+//this increments to the next command and then returns the next command
+void execute_next_command(int pid, struct process process_table[], struct queue io_q, struct queue ssd_q, struct queue rdy_q)
+{
+    process_table[pid].command_index++;
+
+    if(process_table[pid].command_index==process_table[pid].total_commands) {
+        process_table[pid].state = FINISHED;
+    } else {
+        if(process_table[pid].commands[process_table[pid].command_index].name == CPU) {
+            rdy_q = enqueue(rdy_q, pid);
+        } else if(process_table[pid].commands[process_table[pid].command_index].name == SSD) {
+            ssd_q = enqueue(ssd_q, pid);
+        } else if(process_table[pid].commands[process_table[pid].command_index].name == SSD) {
+            io_q = move_to_WAITING_INPUT(io_q, pid, process_table);
+        }
+    }
+}
 
 // Method that creates and returns a process struct
 struct process create_new_process()
