@@ -343,10 +343,10 @@ int main (int argc, char *argv[])
     }
 
 
-    // TODO Implement main logic
-
     int minFinishTime = 9999999;
 
+
+    /////////////// Check minimum end time ///////////////
     if(cpu1.busy) {
         if(cpu1.finish_time < minFinishTime) {
             minFinishTime = cpu1.finish_time;
@@ -371,6 +371,8 @@ int main (int argc, char *argv[])
         }
     }
 
+
+    /////////////// Free up hardware, io queue, and new process ///////////////
     if(next_new_process < process_ctr) {
         if(process_table[next_new_process].commands[0].time < minFinishTime) {
             minFinishTime = process_table[next_new_process].commands[0].time;
