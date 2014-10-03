@@ -50,7 +50,6 @@ struct hardware {
     int pid;
     int busy; // If the hardware is being used or not.
     int finish_time; // The global time when the process will be done using that hardware. If start time of process is 120 and it uses the CPU for 15, the finish_time should be 135.
-    int busy_time;
 };
 
 /** Queue */
@@ -149,7 +148,6 @@ void clear_hardware(struct hardware *hw)
     hw->pid = 0;
     hw->busy = 0;
     hw->finish_time = 0;
-    hw->busy_time = 0;
 }
 
 //this removes process from the hardware and returns the pid
