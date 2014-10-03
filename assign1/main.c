@@ -168,7 +168,7 @@ struct process process_table()
     
     return pt;
     
-}
+};
 
 //this removes process from the hardware and returns the pid
 int get_process_from_hardware(struct hardware *hw, struct process process_table[])
