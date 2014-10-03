@@ -152,6 +152,24 @@ void clear_hardware(struct hardware *hw)
     hw->busy_time = 0;
 }
 
+// struct process_table
+struct process process_table() 
+{
+    struct process pt;
+    
+    pt.pid = pid
+    pt.state = READY
+    pt.command_index = 0
+    pt.total_commands = 0
+    pt.ssd_access_counter = 0
+    pt.ssd_usage_time = 0
+    pt.ssd_wait_time = 0
+    pt.ssd_entry_time = 0
+    
+    return pt;
+    
+}
+
 //this removes process from the hardware and returns the pid
 int get_process_from_hardware(struct hardware *hw, struct process process_table[])
 {
