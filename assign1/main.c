@@ -178,6 +178,7 @@ void execute_next_command(int pid, struct process process_table[], struct queue 
             *rdy_q = enqueue(*rdy_q, pid);
         } else if(process_table[pid].commands[process_table[pid].command_index].name == SSD) {
             *ssd_q = enqueue(*ssd_q, pid);
+            process_table[pid].state = WAITING;
             process_table[pid].ssd_entry_time = global_time;
         } else if(process_table[pid].commands[process_table[pid].command_index].name == INP) {
             *io_q = move_to_WAITING_INPUT(*io_q, pid, process_table);
@@ -451,14 +452,14 @@ int main (int argc, char *argv[])
 
         // Dequeue from INP queue
         if(io_q.busy) {
-            if(process_table[io_q.pid[0]].commands[process_table[io_q.pid[0]].command_index].time + process_table[io_q.pid[0]].io_entry_time == minFinishTime) {
+            while(io_q.busy && (process_table[io_q.pid[0]].commands[process_table[io_q.pid[0]].command_index].time + process_table[io_q.pid[0]].io_entry_time == minFinishTime) ) {
                 execute_next_command(dequeue(&io_q), process_table, &io_q, &ssd_q, &ready_q);
             }
         }
 
         // Creating a new process
         if(next_new_process < process_ctr) {
-            if(process_table[next_new_process].commands[0].time == minFinishTime) {
+            while(process_table[next_new_process].commands[0].time == minFinishTime) {
                 execute_next_command(next_new_process, process_table, &io_q, &ssd_q, &ready_q);
                 next_new_process = next_new_process + 1;
             }
@@ -564,7 +565,13 @@ int main (int argc, char *argv[])
     }
 
     printf("Total Number of SSD Accesses: %d\n", ssdAccesses);
-    printf("Average SSD Access Duration: %f\n", ((double)ssdWaitTime/(double)ssdAccesses));
+
+    if(ssdAccesses != 0) {
+        printf("Average SSD Access Duration: %f\n", ((double)ssdWaitTime/(double)ssdAccesses));
+    }
+    else {
+        printf("Average SSD Access Duration: 0\n");
+    }
     printf("Total Elapsed Time %d\n", global_time-process_table[0].commands[0].time);
     printf("CPU Utilization %f\n", ( (double) cpuUsageTime / ((double) global_time-process_table[0].commands[0].time)));
     printf("SSD Utilization %f\n", ((double)ssdUsageTime/((double)global_time-process_table[0].commands[0].time)));
