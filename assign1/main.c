@@ -20,9 +20,6 @@ int process_ctr = 0;
 int pid_ctr = 0;
 int global_time = 0;
 int finished_processes = 0;
-int zero_cores_time = 0;
-int one_core_time = 0;
-int two_cores_time = 0;
 int next_new_process = 0;
 
 /** Command struct */
@@ -37,6 +34,7 @@ struct process {
     int state;
     int command_index;
     int total_commands;
+    int cpu_usage_time;
     int ssd_access_counter;
     int ssd_usage_time;
     int ssd_wait_time;
@@ -103,7 +101,6 @@ int dequeue(struct queue *q)
 // Puts the process in the IO priority queue
 struct queue move_to_WAITING_INPUT(struct queue io, int pid, struct process process_table[])
 {
-    printf("move_to_WAITING_INPUT\n");
     process_table[pid].io_entry_time = global_time;
 
     struct queue new_queue = io;
@@ -171,18 +168,17 @@ int get_process_from_hardware(struct hardware *hw, struct process process_table[
 void execute_next_command(int pid, struct process process_table[], struct queue *io_q, struct queue *ssd_q, struct queue *rdy_q)
 {
     process_table[pid].command_index++;
-    printf("Command index %d pid %d\n", process_table[pid].command_index, pid);
 
     if(process_table[pid].command_index==process_table[pid].total_commands) {
         process_table[pid].state = FINISHED;
         finished_processes++;
-        printf("\tFinished PID process %d\n", pid);
 
     } else {
         if(process_table[pid].commands[process_table[pid].command_index].name == CPU) {
             *rdy_q = enqueue(*rdy_q, pid);
         } else if(process_table[pid].commands[process_table[pid].command_index].name == SSD) {
             *ssd_q = enqueue(*ssd_q, pid);
+            process_table[pid].ssd_entry_time = global_time;
         } else if(process_table[pid].commands[process_table[pid].command_index].name == INP) {
             *io_q = move_to_WAITING_INPUT(*io_q, pid, process_table);
 
@@ -202,6 +198,7 @@ struct process create_new_process()
     pcs.command_index = 0;
     pcs.total_commands = 0;
     pcs.ssd_access_counter = 0;
+    pcs.cpu_usage_time = 0;
     pcs.ssd_usage_time = 0;
     pcs.ssd_wait_time = 0;
     pcs.ssd_entry_time = 0;
@@ -362,14 +359,33 @@ int main (int argc, char *argv[])
     }
 
 
+    printf("Current Time: %d, Total Processes in Table: %d\n", global_time,process_ctr);
+    for(i = 0; i < process_ctr; i++) {
+        printf("PROCESS %d: ", process_table[i].pid);
+        if (process_table[i].state == READY)
+        {
+           printf("Current State = READY");
+        }
+        else if (process_table[i].state == RUNNING)
+        {
+           printf("Current State = RUNNING");
+        }
+        else if (process_table[i].state == WAITING)
+        {
+           printf("Current State = WAITING");
+        }
+        else if (process_table[i].state == FINISHED)
+        {
+           printf("Current State = FINISHED");
+        }
+        printf(" Next Index = %d\n", process_table[i].command_index);
+    }
 
+    printf("\n\n\n");
 
     while(finished_processes < process_ctr){
         /////////////// Check minimum end time ///////////////
-    int minFinishTime = 9999999;
-        printf("finished_processes: %d\n", finished_processes);
-        printf("process_ctr: %d\n", process_ctr);
-
+        int minFinishTime = 9999999;
         // Check cpu1
         if(cpu1.busy) {
             if(cpu1.finish_time < minFinishTime) {
@@ -435,17 +451,10 @@ int main (int argc, char *argv[])
 
         // Dequeue from INP queue
         if(io_q.busy) {
-            printf("\t*****dequeue time %d\n", process_table[io_q.pid[0]].commands[process_table[io_q.pid[0]].command_index].time + process_table[io_q.pid[0]].io_entry_time);
-            printf("\t*****Current TIME %d\n", minFinishTime);
-
             if(process_table[io_q.pid[0]].commands[process_table[io_q.pid[0]].command_index].time + process_table[io_q.pid[0]].io_entry_time == minFinishTime) {
-                printf("\t*****IO_Q next 1 %d\n", io_q.nextEmpty);
                 execute_next_command(dequeue(&io_q), process_table, &io_q, &ssd_q, &ready_q);
-                printf("\t*****IO_Q next 2 %d\n", io_q.nextEmpty);
             }
         }
-
-        printf("Next new process: %d\n",  next_new_process);
 
         // Creating a new process
         if(next_new_process < process_ctr) {
@@ -469,13 +478,11 @@ int main (int argc, char *argv[])
                 cpu1.pid = dequeue(&ready_q);
                 cpu1.busy = 1;
                 cpu1.finish_time = global_time + process_table[cpu1.pid].commands[process_table[cpu1.pid].command_index].time;
+                process_table[cpu1.pid].state = RUNNING;
+                process_table[cpu1.pid].cpu_usage_time = process_table[cpu1.pid].cpu_usage_time + process_table[cpu1.pid].commands[process_table[cpu1.pid].command_index].time;
+
 
                 // Increment command index
-
-
-                printf("CPU1 pid: %d\n", cpu1.pid);
-                printf("CPU1 busy: %d\n", cpu1.busy);
-                printf("CPU1 finish time: %d\n", cpu1.finish_time);
             }
 
         }
@@ -489,12 +496,9 @@ int main (int argc, char *argv[])
                 cpu2.pid = dequeue(&ready_q);
                 cpu2.busy = 1;
                 cpu2.finish_time = global_time + process_table[cpu2.pid].commands[process_table[cpu2.pid].command_index].time;
-
+                process_table[cpu2.pid].state = RUNNING;
+                process_table[cpu2.pid].cpu_usage_time = process_table[cpu2.pid].cpu_usage_time + process_table[cpu2.pid].commands[process_table[cpu2.pid].command_index].time;
                 // Increment command index
-
-                printf("CPU2 pid: %d\n", cpu2.pid);
-                printf("CPU2 busy: %d\n", cpu2.busy);
-                printf("CPU2 finish time: %d\n", cpu2.finish_time);
             }
 
         }
@@ -508,25 +512,62 @@ int main (int argc, char *argv[])
                 ssd.pid = dequeue(&ssd_q);
                 ssd.busy = 1;
                 ssd.finish_time = global_time + process_table[ssd.pid].commands[process_table[ssd.pid].command_index].time;
-
+                process_table[ssd.pid].state = WAITING;
+                process_table[ssd.pid].ssd_wait_time = (process_table[ssd.pid].ssd_wait_time + global_time) - process_table[ssd.pid].ssd_entry_time;
+                process_table[ssd.pid].ssd_access_counter++;
+                process_table[ssd.pid].ssd_usage_time = process_table[ssd.pid].ssd_usage_time + process_table[ssd.pid].commands[process_table[ssd.pid].command_index].time;
                 // Increment command index
-
-                printf("SSD pid: %d\n", ssd.pid);
-                printf("SSD busy: %d\n", ssd.busy);
-                printf("SSD finish time: %d\n", ssd.finish_time);
             }
 
         }
 
-        printf("Current Time: %d\n", global_time);
+        printf("Current Time: %d, Total Processes in Table: %d\n", global_time,process_ctr);
+        for(i = 0; i < process_ctr; i++) {
+                printf("PROCESS %d: ", process_table[i].pid);
+        if (process_table[i].state == READY)
+        {
+           printf("Current State = READY");
+        }
+        else if (process_table[i].state == RUNNING)
+        {
+           printf("Current State = RUNNING");
+        }
+        else if (process_table[i].state == WAITING)
+        {
+           printf("Current State = WAITING");
+        }
+        else if (process_table[i].state == FINISHED)
+        {
+           printf("Current State = FINISHED");
+        }
+        printf(" Next Index = %d\n", process_table[i].command_index);
+    }
+
         printf("\n\n\n");
 
     }
-    printf("\n\n\n\nCurrent Time: %d\n", global_time);
-    printf("FINISHED PROCESSES: %d\n", finished_processes);
+    printf("Summary: \n");
+    printf("Total Processes Completed: %d \n", finished_processes);
 
+    int ssdAccesses = 0;
+    int ssdWaitTime = 0;
+    int ssdUsageTime = 0;
+    int cpuUsageTime = 0;
 
+    for(i=0; i < finished_processes; i++)
+    {
+        ssdAccesses = ssdAccesses + process_table[i].ssd_access_counter;
+        ssdWaitTime =  ssdWaitTime + process_table[i].ssd_usage_time + process_table[i].ssd_wait_time;
+        ssdUsageTime =  ssdUsageTime + process_table[i].ssd_usage_time;
+        cpuUsageTime =  cpuUsageTime + process_table[i].cpu_usage_time;
 
+    }
+
+    printf("Total Number of SSD Accesses: %d\n", ssdAccesses);
+    printf("Average SSD Access Duration: %f\n", ((double)ssdWaitTime/(double)ssdAccesses));
+    printf("Total Elapsed Time %d\n", global_time-process_table[0].commands[0].time);
+    printf("CPU Utilization %f\n", ( (double) cpuUsageTime / ((double) global_time-process_table[0].commands[0].time)));
+    printf("SSD Utilization %f\n", ((double)ssdUsageTime/((double)global_time-process_table[0].commands[0].time)));
 
 
 
