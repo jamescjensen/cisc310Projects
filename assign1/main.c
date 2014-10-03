@@ -541,7 +541,13 @@ int main (int argc, char *argv[])
         {
            printf("Current State = FINISHED");
         }
-        printf(" Next Index = %d\n", process_table[i].command_index);
+
+        if (process_table[i].state == FINISHED) {
+            printf(" Next Index = %d\n", process_table[i].command_index);
+        }
+        else {
+            printf(" Next Index = %d\n", process_table[i].command_index + 1);
+        }
     }
 
         printf("\n\n\n");
