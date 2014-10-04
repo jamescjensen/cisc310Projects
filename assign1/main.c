@@ -573,12 +573,12 @@ int main (int argc, char *argv[])
     printf("Total Number of SSD Accesses: %d\n", ssdAccesses);
 
     if(ssdAccesses != 0) {
-        printf("Average SSD Access Duration: %f\n", ((double)ssdWaitTime/(double)ssdAccesses));
+        printf("Average SSD Access Duration: %f ms\n", ((double)ssdWaitTime/(double)ssdAccesses));
     }
     else {
-        printf("Average SSD Access Duration: 0\n");
+        printf("Average SSD Access Duration: 0 ms\n");
     }
-    printf("Total Elapsed Time %d\n", global_time-process_table[0].commands[0].time);
+    printf("Total Elapsed Time %d ms\n", global_time-process_table[0].commands[0].time);
     printf("CPU Utilization %f\n", ( (double) cpuUsageTime / ((double) global_time-process_table[0].commands[0].time)));
     printf("SSD Utilization %f\n", ((double)ssdUsageTime/((double)global_time-process_table[0].commands[0].time)));
 
