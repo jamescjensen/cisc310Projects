@@ -142,9 +142,9 @@ struct queue move_to_WAITING_INPUT(struct queue io, int pid, struct process proc
 
 void clear_hardware(struct hardware *hw)
 {
-    hw->pid = 0;
+    hw->pid = -1;
     hw->busy = 0;
-    hw->finish_time = 0;
+    hw->finish_time = -1;
 }
 
 
