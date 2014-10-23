@@ -1,19 +1,25 @@
+import java.util.ArrayList;
+
 
 public class Driver {
-
+	
 	public static void main(String[] args) {
-		Elevator e1 = new Elevator(0);
-		Elevator e2 = new Elevator(0);
-		Elevator e3 = new Elevator(0);
-		Elevator e4 = new Elevator(0);
-		Elevator e5 = new Elevator(0);
+		int n = 8; // Number of elevators
+		int f; // Number of floors
+		String file; // Input file
+		
+//		ArrayList people = new ArrayList<Person>(1);
+		ArrayList<Elevator> elevators = new ArrayList<Elevator>(1);
 		
 		
-		System.out.println(e1.getId());
-		System.out.println(e2.getId());
-		System.out.println(e3.getId());
-		System.out.println(e4.getId());
-		System.out.println(e5.getId());
+	
+		
+		// Create elevators
+		for(int i = 0; i < n; i++) {
+			elevators.add(new Elevator(0));
+			System.out.println(elevators.get(i).getId());
+		}
+			
 	}
 
 }

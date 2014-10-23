@@ -21,6 +21,7 @@ public class Elevator implements Runnable {
 	/** Opens the door of the elevator. Lets people out and gets people in
 	 */
 	public void open() {
+		System.out.println("Elevator " + this.getId() + " arrived at floor " + this.getCurrentFloor());
 		// TODO Let people go
 		// TODO Get People in
 		// TODO Close
@@ -30,6 +31,7 @@ public class Elevator implements Runnable {
 	/** Closes the door of the elevator
 	 */
 	private void close() {
+		System.out.println("Elevator " + this.getId() + " serviced floor " + this.getCurrentFloor());
 		// TODO Move()
 	}
 	
@@ -37,6 +39,7 @@ public class Elevator implements Runnable {
 	 */
 	public void move() {
 		// Go either up or down
+		// Update the current floor
 	}
 
 	@Override
