@@ -4,17 +4,18 @@ public class Person implements Runnable {
 	private static final int WAITING = 1;
 	private static final int IN_ELEVATOR = 0;
 	
-	private String PersonName;
+	private String personName;
 	private int waitTime;
 	private int currentFloor;
+	private int nextFloor;
 	private int[] listFloor;
 	
-	public Person (String PersonName, int waitTime, int currentFloor, int[] ListFloor) {
-		
-		this.PersonName = PersonName;
+	public Person (String personName, int waitTime, int currentFloor, int[] listFloor) {
+		this.personName = personName;
 		this.waitTime = waitTime;
 		this.currentFloor = currentFloor;
-		this.listFloor = ListFloor;
+		this.nextFloor = 0;
+		this.listFloor = listFloor;
 		
 	}
 	@Override
@@ -23,27 +24,31 @@ public class Person implements Runnable {
 		
 	}
 	
-	public void EnterElevator(){
+	public void enterElevator(){
 		
 	}
 	
-	public void ExitElevator() {
+	public void exitElevator() {
 		
 	}
 	
-	public String GetPersonName() {
-		return this.PersonName;
+	public String getPersonName() {
+		return this.personName;
 	}
 	
-	public int GetwaitTime() {
+	public int getNextFloor() { 
+		return this.nextFloor;
+	}
+	
+	public int getwaitTime() {
 		return this.waitTime; 
 	}
 	
-	public int GetcurrentFloor() {
+	public int getcurrentFloor() {
 		return this.currentFloor;
 	}
 	
-	public int[] GetListFloor() {
+	public int[] getListFloor() {
 		return this.listFloor;
 	}
 	
