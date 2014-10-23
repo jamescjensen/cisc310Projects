@@ -9,9 +9,9 @@ public class Elevator implements Runnable {
 	private int currentNumPeople;
 		
 	public Elevator(int startFloor) {
+		this.id = Elevator.nextId;
 		Elevator.nextId++;
 		
-		this.id = Elevator.nextId;
 		this.currentFloor = 0;
 		this.currentNumPeople = 0;		
 	}
@@ -21,20 +21,22 @@ public class Elevator implements Runnable {
 	/** Opens the door of the elevator. Lets people out and gets people in
 	 */
 	public void open() {
-		
+		// TODO Let people go
+		// TODO Get People in
+		// TODO Close
 	}
 	
 	
 	/** Closes the door of the elevator
 	 */
-	public void close() {
-		
+	private void close() {
+		// TODO Move()
 	}
 	
 	/** Moves the elevator either up or down 1 floor
 	 */
 	public void move() {
-		
+		// Go either up or down
 	}
 
 	@Override
