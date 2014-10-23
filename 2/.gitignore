@@ -2,3 +2,8 @@
 *.o
 *.out
 *.class
+/.metadata
+/.recommenders
+/RemoteSystemsTempFiles
+/MultiThreadElevator/.svn
+/MultiThreadElevator/.settings
