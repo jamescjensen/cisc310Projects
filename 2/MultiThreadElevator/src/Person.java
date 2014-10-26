@@ -30,9 +30,10 @@ public class Person implements Runnable {
 
 			for(int i = 0; i < listFloors.length; i++) {
 				System.out.println(this.getName() + " waiting on " + this.getCurrentFloor() + " for floor " + listFloors[i]);
-				// TODO get on elevator
+				getBuilding().getOnElevator(this);
 				// TODO travel
 				// TODO get off elevator
+				System.out.println(this.getName() + " arrived on floor " + this.getCurrentFloor());
 				Thread.sleep(this.getWaitTime());
 	//			building.goToFloor(listFloors[i]);
 			}

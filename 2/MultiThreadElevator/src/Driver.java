@@ -11,17 +11,13 @@ import java.util.List;
 public class Driver {
 	
 	public static void main(String[] args) throws IOException {
-		Building building = new Building(5,2);
+		Building building = new Building(1,2);
 		String file = "src/input.txt"; // Input file
 
-		ArrayList<Person> people = Driver.readFile(file);
+		ArrayList<Person> people = Driver.readFile(file,building);
 		
 		for(int i = 0; i < people.size(); i++) {
 			new Thread(people.get(i)).start();;
-		}
-		
-		for(int i = 0; i < building.getE(); i++) {
-			new Thread(new Elevator(0)).start();
 		}
 		
 //		
@@ -53,7 +49,7 @@ public class Driver {
 	
 	/** Reads the input file and creates a person for each line
 	 * */
-	public static ArrayList<Person> readFile(String filename) throws IOException {
+	public static ArrayList<Person> readFile(String filename, Building building) throws IOException {
         ArrayList<Person> everyPerson = new ArrayList<Person>(1);
         Path path = Paths.get(filename);
         List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
@@ -74,7 +70,7 @@ public class Driver {
                 floorArray[i-1] = Integer.parseInt(commandString[i].replaceAll("[;\\]\\[]", ""));
             }
             
-            Person p = new Person(personName, waitTime, startFloor, floorArray);
+            Person p = new Person(building, personName, waitTime, startFloor, floorArray);
             everyPerson.add(p);
         }
         

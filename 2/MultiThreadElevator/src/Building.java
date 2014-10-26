@@ -1,39 +1,27 @@
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Building {
 	
-	int e = 2; // Number of elevators
-	int f = 5; // Number of floors
+	List<Elevator> elevators = new ArrayList<Elevator>();
+	int f = 100000; // Number of floors
 	
 	public Building(int e, int f) {
-		setE(e);
+		for(int i=0;i<e;i++){
+			elevators.add(new Elevator(i));
+			new Thread(elevators.get(i)).start();
+		}
 		setF(f);
 	}
 
-	public void getOnElevator(String name) {
-		System.out.println(name + " taking elevator ");
-		
-	}
-	
-	public void getOffElevator(String name, int floor) {
-		System.out.println(name + " arrived at floor " + floor);
+	public void getOnElevator(Person person) {
+		System.out.println(person.getName() + " taking elevator ");
 	}
 	
 	
 	public void move() {
 		
-	}
-	
-	public void arive() {
-		System.out.println(name + " arrived at floor " + floor);
-	}
-	
-	
-	public int getE(){
-		return this.e;
-	}
-	
-	public void setE(int e){
-		this.e = e;
 	}
 	
 	public int getF(){
