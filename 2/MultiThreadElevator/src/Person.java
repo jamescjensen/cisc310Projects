@@ -6,14 +6,16 @@ public class Person implements Runnable {
 	private static final int WAITING = 1;
 	private static final int IN_ELEVATOR = 0;
 	
-	private String 	name;
-	private int 	waitTime;
-	private int 	currentFloor;
-	private int 	nextFloor;
-	private int[] 	listFloor;
+	private String 		name;
+	private Building	building;
+	private int 		waitTime;
+	private int 		currentFloor;
+	private int 		nextFloor;
+	private int[] 		listFloor;
 	
-	public Person (String personName, int waitTime, int currentFloor, int[] listFloor) {
+	public Person (Building building, String personName, int waitTime, int currentFloor, int[] listFloor) {
 		this.name = personName;
+		this.building = building;
 		this.waitTime = waitTime;
 		this.currentFloor = currentFloor;
 		this.nextFloor = 0;
@@ -65,6 +67,10 @@ public class Person implements Runnable {
 	
 	public int getCurrentFloor() {
 		return this.currentFloor;
+	}
+	
+	public Building getBuilding() {
+		return this.building;
 	}
 	
 	private void setCurrentFloor(int floor) {
