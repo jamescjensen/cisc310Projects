@@ -9,6 +9,25 @@ public class Building {
 		setF(f);
 	}
 
+	public void getOnElevator(String name) {
+		System.out.println(name + " taking elevator ");
+		
+	}
+	
+	public void getOffElevator(String name, int floor) {
+		System.out.println(name + " arrived at floor " + floor);
+	}
+	
+	
+	public void move() {
+		
+	}
+	
+	public void arive() {
+		System.out.println(name + " arrived at floor " + floor);
+	}
+	
+	
 	public int getE(){
 		return this.e;
 	}
@@ -23,15 +42,6 @@ public class Building {
 	
 	public void setF(int f){
 		this.f = f;
-	}
-	
-	public void getOnElevator(String name) {
-		System.out.println(name + " taking elevator ");
-		
-	}
-	
-	public void getOffElevator(String name, int floor) {
-		System.out.println(name + " arrived at floor " + floor);
 	}
 
 }
