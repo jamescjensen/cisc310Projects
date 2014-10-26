@@ -64,12 +64,14 @@ public class Elevator implements Runnable {
 		
 	public int getCurrentFloor() { return this.currentFloor; }
 	
+	public int getMaxCapacity() { return Elevator.MAX_CAPACITY; }
+	
 //	public Buidling getBuilding() { return this.building; }
 	
-	private void setCurrentFloor(int currentFloor) { this.currentFloor = currentFloor; }
+	public void setCurrentFloor(int currentFloor) { this.currentFloor = currentFloor; }
 	
 	public int getCurrentNumPeople() { return this.currentNumPeople; }
 	
-	private void setCurrentNumPeople(int currentNumPeople) { this.currentNumPeople = currentNumPeople; }
+	public void setCurrentNumPeople(int currentNumPeople) { this.currentNumPeople = currentNumPeople; }
 	
 }
