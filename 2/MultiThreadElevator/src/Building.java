@@ -50,7 +50,8 @@ public class Building {
 //				
 //			}
 			
-			while(person.getCurrentFloor() != el.getCurrentFloor() && el.getCurrentNumPeople() >= el.getMaxCapacity()) {
+			
+			while(person.getCurrentFloor() != el.getCurrentFloor() && el.getCurrentNumPeople() < el.getMaxCapacity()) {
 				this.availableCondition.await();
 			}
 			

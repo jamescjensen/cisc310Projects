@@ -20,30 +20,7 @@ public class Driver {
 			new Thread(people.get(i)).start();;
 		}
 		
-//		
-////		ArrayList people = new ArrayList<Person>(1);
-//		ArrayList<Elevator> elevators = new ArrayList<Elevator>(1);
-//		
-//		
-//	
-//		
-//		// Create elevators
-//		for(int i = 0; i < n; i++) {
-//			elevators.add(new Elevator(0));
-//			System.out.println(elevators.get(i).getId());
-//		}
-		
-//		int[] floors = new int[3];
-//		
-//		floors[0] = 1;
-//		floors[1] = 2;
-//		floors[2] = 0;
-//		
-//		Person p1 = new Person("Tim", 5, 0, floors);
-//		Person p2 = new Person("John", 10, 1, floors);
-//		
-//		new Thread(p1).start();
-//		new Thread(p2).start();
+
 		
 	}
 	
