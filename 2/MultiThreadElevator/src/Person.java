@@ -1,18 +1,11 @@
-import java.util.ArrayList;
-import java.util.List;
-
 public class Person implements Runnable {
-	
-	private static final boolean WAITING = true;
-	private static final boolean IN_ELEVATOR = false;
-	
+		
 	private String 		name;
 	private Building	building;
 	private int 		waitTime;
 	private int 		currentFloor;
 	private int 		nextFloor;
 	private int[] 		listFloor;
-	private boolean 	status;
 	
 	public Person (Building building, String personName, int waitTime, int currentFloor, int[] listFloor) {
 		this.name = personName;
@@ -20,38 +13,36 @@ public class Person implements Runnable {
 		this.waitTime = waitTime;
 		this.currentFloor = currentFloor;
 		this.listFloor = listFloor;
-		this.nextFloor = 0;
-		this.status = WAITING;
-		
+		this.nextFloor = 0;	
 	}
+	
 	@Override
+	/** Runs the Person thread
+	 */
 	public void run() {
+		// Get the list of floors
 		int[] listFloors = this.getListFloor();
-		
-//		for(int i = 0; i < listFloors.length; i++) {
-//			System.out.println(listFloors[i]);
-//		}
-		
-		try {
-			
-			System.out.println("Number of floors: " + listFloors.length);
-			for(int i = 0; i < listFloors.length; i++) {
-				System.out.println(this.getName() + " waiting on " + this.getCurrentFloor() + " for floor " + listFloors[i]);
-				getBuilding().getOnElevator(this);
 				
+		try {
+			// Go through all the floor that each person wants to visit
+			for(int i = 0; i < listFloors.length; i++) {
+				System.out.println(this.getName() + " waiting on " + this.getCurrentFloor() + " for floor " + listFloors[this.getNextFloor()]);
+				
+				// Save the destination floor
 				int destinationFloor = this.getListFloor()[this.getNextFloor()];
+				
+				// Get on the elevator
+				this.getBuilding().getOnElevator(this);
+				
 				
 //				System.out.println("Got in elevator, destination: " + destinationFloor);
 				
+				// TODO Once the person enters the elevator, it needs to wait unitl it reaches its floor
 				while(this.getCurrentFloor() != destinationFloor) {
 //					System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
-//					System.out.println("name: " + this.getName() + " Current floor: " + this.getCurrentFloor() + " - destination: " + destinationFloor);
-//					if(this.getCurrentFloor() == destinationFloor) {
-//						System.out.println("SAME");
-//					}
+
 				}
 				
-//				System.out.println(this.getName() + " arrived on floor " + this.getCurrentFloor());
 				System.out.println("I'm sleeping");
 				
 				Thread.sleep(this.getWaitTime());
@@ -63,64 +54,36 @@ public class Person implements Runnable {
 		
 				
 	}
+	
+	/** Update the floor of this person assuming that they have reached
+	 * a new floor
+	 */
+	public void updateFloor(int floor) {
+		this.setCurrentFloor(floor);
+		this.setNextFloor(this.getNextFloor() + 1);
+	}
 
+	// Getters 
+	public String getName() { return this.name; }
 	
-//	public void enterElevator(){
-//		
-//	}
-//	
-//	public void exitElevator() {
-//		
-//	}
+	public int getNextFloor() { return this.nextFloor;	}
 	
-	public String getName() {
-		return this.name;
-	}
+	public int getWaitTime() { return this.waitTime; }
 	
-	public int getNextFloor() { 
-		return this.nextFloor;
-	}
+	public int getCurrentFloor() { return this.currentFloor; }
 	
-	public int getWaitTime() {
-		return this.waitTime; 
-	}
+	public Building getBuilding() {	return this.building; }
 	
-	public int getCurrentFloor() {
-		return this.currentFloor;
-	}
+	public int[] getListFloor() { return this.listFloor; }
 	
-	public Building getBuilding() {
-		return this.building;
-	}
-	
-	public boolean getStatus() {
-		return this.status;
-	}
-	
-	public boolean getWaiting() {
-		return Person.WAITING;
-	}
-	
-	public boolean getInElevator() {
-		return Person.IN_ELEVATOR;
-	}
-	
-	public void setStatus(boolean status) {
-		this.status = status;
-	}
-	
-	public void setCurrentFloor(int floor) {
+
+	// Setters
+	private void setCurrentFloor(int floor) {
 		this.currentFloor = floor;
 	}
 	
-	public void setNextFloor(int floor) {
+	private void setNextFloor(int floor) {
 		this.nextFloor = floor;
 	}
-	
-	public int[] getListFloor() {
-		return this.listFloor;
-	}
-	
-	
 	
 }

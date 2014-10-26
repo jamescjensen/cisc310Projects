@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,15 +6,20 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Driver {
 	
 	public static void main(String[] args) throws IOException {
-		Building building = new Building(1,2);
+		int n = 1; // Number of elevators
+		int f = 2; // Number of floors
 		String file = "src/input.txt"; // Input file
+		
+		// Creating the building class which creates elevators and starts their threads
+		Building building = new Building(n,f);
 
+		// Reading the file which creates persons
 		ArrayList<Person> people = Driver.readFile(file,building);
 		
+		// Starting the thread for each person.
 		for(int i = 0; i < people.size(); i++) {
 			new Thread(people.get(i)).start();;
 		}

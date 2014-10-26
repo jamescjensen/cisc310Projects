@@ -4,95 +4,81 @@ public class Elevator implements Runnable {
 	
 	private static final int MAX_CAPACITY = 3;
 	
-	private static int nextId = 0;
-	
-	private Building 	building;
-	private ArrayList<Person> peopleInElevator = new ArrayList<Person>(MAX_CAPACITY);
-	private int 		id;
-	private int 		currentFloor;
-	private int 		currentNumPeople;
-	private int			direction;
+	private ArrayList<Person> 	peopleInElevator;
+	private Building 			building;
+	private int 				id;
+	private int 				currentFloor;
+	private int					direction;
 		
 	public Elevator(int id, Building building) {
 		this.id = id;
-//		Elevator.nextId++;
-		
+		this.peopleInElevator = new ArrayList<Person>(MAX_CAPACITY);
 		this.currentFloor = 0;
-		this.currentNumPeople = 0;	
 		this.building = building;
 		this.direction = 1;
-		}
-	
-	
-	
-//	/** Opens the door of the elevator. Lets people out and gets people in
-//	 */
-//	public void open() {
-//		System.out.println("Elevator " + this.getId() + " arrived at floor " + this.getCurrentFloor());
-//		// TODO Let people go
-//		// TODO Get People in
-//		// TODO Close
-//	}
-//	
-//	
-//	/** Closes the door of the elevator
-//	 */
-//	private void close() {
-//		System.out.println("Elevator " + this.getId() + " serviced floor " + this.getCurrentFloor());
-//		// TODO Move()
-//	}
-//	
-//	/** Moves the elevator either up or down 1 floor
-//	 */
-//	public void move() {
-//		// Go either up or down
-//		// Update the current floor
-//	}
-
-	@Override  
-	public void run() {
-		try {
-			while(true) { // TODO needs to stop when every person has gone to all of the floors they wanted.
-				building.move();
-				Thread.sleep(1000);
-//				Building.service();
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
 	}
 	
 	
+	@Override  
+	/** Runs the Person thread
+	 */
+	public void run() {
+		try {
+			while(true) { // TODO needs to stop when every person has gone to all of the floors they wanted.
+				// Move the elevator
+				this.getBuilding().service();
+				
+				// Sleep for 1 second so that people exit and enter the elevator
+				Thread.sleep(1000);
+				System.out.println("Elevator: " + this.getId() + " serviced floor " + this.getCurrentFloor());
+			}
+		} catch (InterruptedException ie) {
+			ie.printStackTrace();
+		}		
+	}
+	
+	/** Inserts a person in the elevator
+	 */
 	public void insertPerson(Person person) {
 		this.peopleInElevator.add(person);
 	}
 	
+	/** Removes a person from the elevator
+	 */
 	public void removePerson(Person person) {
 		this.peopleInElevator.remove(person);
 	}
 	
-	// Getters and setters
+	/** Changes the direction of the elevator
+	 */
+	public void changeDirection() {
+		this.setDirection(this.getDirection() * -1);
+	}
+	
+	public void move() {
+		this.setCurrentFloor(this.getCurrentFloor() + this.getDirection());
+	}
+	
+	// Getters 
 	public int getId() { return this.id; }
 		
 	public int getCurrentFloor() { return this.currentFloor; }
 	
 	public int getMaxCapacity() { return Elevator.MAX_CAPACITY; }
 	
-	public int getDirection() {
-		return this.direction;
-	}
-	
-	public void setDirection(int direction) { this.direction = direction; }
+	public int getDirection() {	return this.direction; }
 	
 	public ArrayList<Person> getPeopleInElevator() { return this.peopleInElevator; }
+
+	public Building getBuilding() { return this.building; }
 	
-//	public Buidling getBuilding() { return this.building; }
+	public int getCurrentNumPeople() { return this.peopleInElevator.size(); }
+
 	
+	// Setters
+	
+	public void setDirection(int direction) { this.direction = direction; }
+
 	public void setCurrentFloor(int currentFloor) { this.currentFloor = currentFloor; }
-	
-	public int getCurrentNumPeople() { return this.currentNumPeople; }
-	
-	public void setCurrentNumPeople(int currentNumPeople) { this.currentNumPeople = currentNumPeople; }
 	
 }
