@@ -11,9 +11,8 @@ import java.util.List;
 public class Driver {
 	
 	public static void main(String[] args) throws IOException {
+		Building building = new Building(5,2);
 		String file = "src/input.txt"; // Input file
-		int n = 2; // Number of elevators
-		int f = 5; // Number of floors
 
 		ArrayList<Person> people = Driver.readFile(file);
 		
@@ -21,7 +20,7 @@ public class Driver {
 			new Thread(people.get(i)).start();;
 		}
 		
-		for(int i = 0; i < n; i++) {
+		for(int i = 0; i < building.getE(); i++) {
 			new Thread(new Elevator(0)).start();
 		}
 		
