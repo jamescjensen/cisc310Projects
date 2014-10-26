@@ -18,35 +18,42 @@ public class Elevator implements Runnable {
 	
 	
 	
-	/** Opens the door of the elevator. Lets people out and gets people in
-	 */
-	public void open() {
-		System.out.println("Elevator " + this.getId() + " arrived at floor " + this.getCurrentFloor());
-		// TODO Let people go
-		// TODO Get People in
-		// TODO Close
-	}
-	
-	
-	/** Closes the door of the elevator
-	 */
-	private void close() {
-		System.out.println("Elevator " + this.getId() + " serviced floor " + this.getCurrentFloor());
-		// TODO Move()
-	}
-	
-	/** Moves the elevator either up or down 1 floor
-	 */
-	public void move() {
-		// Go either up or down
-		// Update the current floor
-	}
+//	/** Opens the door of the elevator. Lets people out and gets people in
+//	 */
+//	public void open() {
+//		System.out.println("Elevator " + this.getId() + " arrived at floor " + this.getCurrentFloor());
+//		// TODO Let people go
+//		// TODO Get People in
+//		// TODO Close
+//	}
+//	
+//	
+//	/** Closes the door of the elevator
+//	 */
+//	private void close() {
+//		System.out.println("Elevator " + this.getId() + " serviced floor " + this.getCurrentFloor());
+//		// TODO Move()
+//	}
+//	
+//	/** Moves the elevator either up or down 1 floor
+//	 */
+//	public void move() {
+//		// Go either up or down
+//		// Update the current floor
+//	}
 
-	@Override
+	@Override  
 	public void run() {
-		this.open();
-		this.close();
-		this.move();		
+		try {
+			while(true) {
+//				Building.arrive();
+				Thread.sleep(1000);
+//				Building.service();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 	
 	
