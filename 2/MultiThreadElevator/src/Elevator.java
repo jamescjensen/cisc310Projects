@@ -4,18 +4,18 @@ public class Elevator implements Runnable {
 	
 	private static int nextId = 0;
 	
-	private Building 	building;
+//	private Building 	building;
 	private int 		id;
-	private int 	currentFloor;
-	private int 	currentNumPeople;
+	private int 		currentFloor;
+	private int 		currentNumPeople;
 		
-	public Elevator(int startFloor, Building building) {
-		this.id = Elevator.nextId;
-		Elevator.nextId++;
+	public Elevator(int id) {
+		this.id = id;
+//		Elevator.nextId++;
 		
 		this.currentFloor = 0;
 		this.currentNumPeople = 0;	
-		this.building = building;
+//		this.building = building;
 		}
 	
 	
@@ -48,9 +48,9 @@ public class Elevator implements Runnable {
 	public void run() {
 		try {
 			while(true) {
-				Building.arrive();
+//				Building.arrive();
 				Thread.sleep(1000);
-				Building.service();
+//				Building.service();
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -64,7 +64,7 @@ public class Elevator implements Runnable {
 		
 	public int getCurrentFloor() { return this.currentFloor; }
 	
-	public Buidling getBuilding() { return this.building; }
+//	public Buidling getBuilding() { return this.building; }
 	
 	private void setCurrentFloor(int currentFloor) { this.currentFloor = currentFloor; }
 	
