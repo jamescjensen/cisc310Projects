@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Person implements Runnable {
 	
 	private static final int WAITING = 1;
@@ -21,18 +24,24 @@ public class Person implements Runnable {
 	public void run() {
 		int[] listFloors = this.getListFloor();
 		
-		for(int i = 0; i < listFloors.length; i++) {
-			System.out.println(this.getName() + " waiting on " + this.getCurrentFloor() + " for floor " + listFloors[i]);
-			// TODO get on elevator
-			// TODO travel
-			// TODO get off elevator
-			// TODO wait
-//			building.goToFloor(listFloors[i]);
-			
+		try {
+
+			for(int i = 0; i < listFloors.length; i++) {
+				System.out.println(this.getName() + " waiting on " + this.getCurrentFloor() + " for floor " + listFloors[i]);
+				// TODO get on elevator
+				// TODO travel
+				// TODO get off elevator
+				Thread.sleep(this.getWaitTime());
+	//			building.goToFloor(listFloors[i]);
+			}
+		}
+		catch(InterruptedException ie) {
+			ie.printStackTrace();
 		}
 		
 				
 	}
+
 	
 //	public void enterElevator(){
 //		
