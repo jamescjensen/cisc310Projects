@@ -19,8 +19,8 @@ public class Person implements Runnable {
 		this.building = building;
 		this.waitTime = waitTime;
 		this.currentFloor = currentFloor;
-		this.nextFloor = 0;
 		this.listFloor = listFloor;
+		this.nextFloor = 0;
 		this.status = WAITING;
 		
 	}
@@ -28,12 +28,32 @@ public class Person implements Runnable {
 	public void run() {
 		int[] listFloors = this.getListFloor();
 		
+//		for(int i = 0; i < listFloors.length; i++) {
+//			System.out.println(listFloors[i]);
+//		}
+		
 		try {
-
+			
+			System.out.println("Number of floors: " + listFloors.length);
 			for(int i = 0; i < listFloors.length; i++) {
 				System.out.println(this.getName() + " waiting on " + this.getCurrentFloor() + " for floor " + listFloors[i]);
 				getBuilding().getOnElevator(this);
-				System.out.println(this.getName() + " arrived on floor " + this.getCurrentFloor());
+				
+				int destinationFloor = this.getListFloor()[this.getNextFloor()];
+				
+//				System.out.println("Got in elevator, destination: " + destinationFloor);
+				
+				while(this.getCurrentFloor() != destinationFloor) {
+//					System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
+//					System.out.println("name: " + this.getName() + " Current floor: " + this.getCurrentFloor() + " - destination: " + destinationFloor);
+//					if(this.getCurrentFloor() == destinationFloor) {
+//						System.out.println("SAME");
+//					}
+				}
+				
+//				System.out.println(this.getName() + " arrived on floor " + this.getCurrentFloor());
+				System.out.println("I'm sleeping");
+				
 				Thread.sleep(this.getWaitTime());
 			}
 		}
@@ -89,12 +109,18 @@ public class Person implements Runnable {
 		this.status = status;
 	}
 	
-	private void setCurrentFloor(int floor) {
+	public void setCurrentFloor(int floor) {
 		this.currentFloor = floor;
+	}
+	
+	public void setNextFloor(int floor) {
+		this.nextFloor = floor;
 	}
 	
 	public int[] getListFloor() {
 		return this.listFloor;
 	}
+	
+	
 	
 }

@@ -1,21 +1,26 @@
+import java.util.ArrayList;
+
 public class Elevator implements Runnable {
 	
 	private static final int MAX_CAPACITY = 3;
 	
 	private static int nextId = 0;
 	
-//	private Building 	building;
+	private Building 	building;
+	private ArrayList<Person> peopleInElevator = new ArrayList<Person>(MAX_CAPACITY);
 	private int 		id;
 	private int 		currentFloor;
 	private int 		currentNumPeople;
+	private int			direction;
 		
-	public Elevator(int id) {
+	public Elevator(int id, Building building) {
 		this.id = id;
 //		Elevator.nextId++;
 		
 		this.currentFloor = 0;
 		this.currentNumPeople = 0;	
-//		this.building = building;
+		this.building = building;
+		this.direction = 1;
 		}
 	
 	
@@ -47,8 +52,8 @@ public class Elevator implements Runnable {
 	@Override  
 	public void run() {
 		try {
-			while(true) {
-//				Building.arrive();
+			while(true) { // TODO needs to stop when every person has gone to all of the floors they wanted.
+				building.move();
 				Thread.sleep(1000);
 //				Building.service();
 			}
@@ -59,12 +64,28 @@ public class Elevator implements Runnable {
 	}
 	
 	
+	public void insertPerson(Person person) {
+		this.peopleInElevator.add(person);
+	}
+	
+	public void removePerson(Person person) {
+		this.peopleInElevator.remove(person);
+	}
+	
 	// Getters and setters
 	public int getId() { return this.id; }
 		
 	public int getCurrentFloor() { return this.currentFloor; }
 	
 	public int getMaxCapacity() { return Elevator.MAX_CAPACITY; }
+	
+	public int getDirection() {
+		return this.direction;
+	}
+	
+	public void setDirection(int direction) { this.direction = direction; }
+	
+	public ArrayList<Person> getPeopleInElevator() { return this.peopleInElevator; }
 	
 //	public Buidling getBuilding() { return this.building; }
 	
