@@ -26,10 +26,10 @@ public class Elevator implements Runnable {
 		try {
 			while(true) { // TODO needs to stop when every person has gone to all of the floors they wanted.
 				// Move the elevator
-				this.getBuilding().service();
+				this.getBuilding().service(this);
 				
 				// Sleep for 1 second so that people exit and enter the elevator
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 				System.out.println("Elevator: " + this.getId() + " serviced floor " + this.getCurrentFloor());
 			}
 		} catch (InterruptedException ie) {

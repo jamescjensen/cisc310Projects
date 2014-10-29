@@ -33,19 +33,21 @@ public class Person implements Runnable {
 				
 				// Get on the elevator
 				this.getBuilding().getOnElevator(this);
-				
-				
+								
 //				System.out.println("Got in elevator, destination: " + destinationFloor);
+//				System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
+				
 				
 				// TODO Once the person enters the elevator, it needs to wait unitl it reaches its floor
 				while(this.getCurrentFloor() != destinationFloor) {
 //					System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
-
+					Thread.sleep(20);
 				}
-				
-				System.out.println("I'm sleeping");
+				System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
+				System.out.flush();
 				
 				Thread.sleep(this.getWaitTime());
+				this.setNextFloor(this.getNextFloor() + 1);
 			}
 		}
 		catch(InterruptedException ie) {
@@ -60,7 +62,7 @@ public class Person implements Runnable {
 	 */
 	public void updateFloor(int floor) {
 		this.setCurrentFloor(floor);
-		this.setNextFloor(this.getNextFloor() + 1);
+//		this.setNextFloor(this.getNextFloor() + 1);
 	}
 
 	// Getters 

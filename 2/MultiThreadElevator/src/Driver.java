@@ -51,7 +51,7 @@ public class Driver {
                 floorArray[i-1] = Integer.parseInt(commandString[i].replaceAll("[;\\]\\[]", ""));
             }
             
-            Person p = new Person(building, personName, waitTime, startFloor, floorArray);
+            Person p = new Person(building, personName, waitTime * 1000, startFloor, floorArray);
             everyPerson.add(p);
         }
         
