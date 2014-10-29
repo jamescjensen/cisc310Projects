@@ -37,16 +37,29 @@ public class Building {
 		
 		try {	
 			int elevatorId = -1;
+			boolean canGetIn = false;
 			
-			for(int i = 0; i < this.getElevators().size(); i++) {
-				elevatorId = i;
+			while(!canGetIn) {			
+				for(int i = 0; i < this.getElevators().size(); i++) {
+					elevatorId = i;
+					
+					System.out.println("Elevator check: " + elevatorId);
+					// Wait until the elevator is not on the same floor
+	//				while(person.getCurrentFloor() != this.getElevators().get(i).getCurrentFloor() ||
+	//						this.getElevators().get(i).getCurrentNumPeople() >= this.getElevators().get(i).getMaxCapacity()) { // TODO or the elevator is not going on the direction they want to go
+	//					// Wait
+	//					this.getAvailableCondition().await();
+	//				}
+					
+					if(person.getCurrentFloor() == this.getElevators().get(i).getCurrentFloor() &&
+							this.getElevators().get(i).getCurrentNumPeople() < this.getElevators().get(i).getMaxCapacity()) {
+						canGetIn = true;
+					}
+				}
 				
-				System.out.println("Elevator check: " + elevatorId);
-				// Wait until the elevator is not on the same floor
-				while(person.getCurrentFloor() != this.getElevators().get(i).getCurrentFloor() ||
-						this.getElevators().get(i).getCurrentNumPeople() >= this.getElevators().get(i).getMaxCapacity()) { // TODO or the elevator is not going on the direction they want to go
+				if(!canGetIn) {
 					// Wait
-					this.getAvailableCondition().await();
+					this.getAvailableCondition().await();				
 				}
 			}
 			

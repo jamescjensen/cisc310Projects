@@ -30,7 +30,7 @@ public class Elevator implements Runnable {
 				
 				// Sleep for 1 second so that people exit and enter the elevator
 				Thread.sleep(2000);
-				System.out.println("Elevator: " + this.getId() + " serviced floor " + this.getCurrentFloor());
+				System.out.println("Elevator " + this.getId() + " serviced floor " + this.getCurrentFloor());
 			}
 		} catch (InterruptedException ie) {
 			ie.printStackTrace();

@@ -43,8 +43,8 @@ public class Person implements Runnable {
 //					System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
 					Thread.sleep(20);
 				}
-				System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
-				System.out.flush();
+//				System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
+//				System.out.flush();
 				
 				Thread.sleep(this.getWaitTime());
 				this.setNextFloor(this.getNextFloor() + 1);
