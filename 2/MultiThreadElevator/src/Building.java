@@ -8,11 +8,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Building {
 	
 	private List<Elevator> 	elevators = new ArrayList<Elevator>();
-//	private Elevator 		elevator;
-	private int 			floors = 100000; // Default number of floors
+	private int 			floors;
 	 
-	private Lock 			elevatorsAvaliableLock;
-	private Condition 		availableCondition;
+	private Lock[] 			floorLock;
+	private Condition[] 	availableCondition;
 	
 	public Building(int elevatorCount, int floorCount) {
 		for(int i=0;i<elevatorCount;i++){
@@ -21,10 +20,16 @@ public class Building {
 		}
 		
 		this.floors = floorCount;
-		this.elevatorsAvaliableLock = new ReentrantLock();
-		this.availableCondition = elevatorsAvaliableLock.newCondition(); // Condition tied to lock
-//		this.elevator = new Elevator(0, this);
+		this.floorLock = new Lock[floorCount];
+		this.availableCondition = new Condition[floorCount];
 		
+		for(int i = 0; i < floorCount; i++) {
+			this.floorLock[i] = new ReentrantLock();
+			this.availableCondition[i] = this.floorLock[i].newCondition(); // Condition tied to lock
+			
+		}
+//		this.elevator = new Elevator(0, this);
+//		
 //		// Start elevator thread
 //		new Thread(elevator).start();
 	}
@@ -33,7 +38,7 @@ public class Building {
 	 */
 	public void getOnElevator(Person person) throws InterruptedException {
 		// TODO Lock what??
-		this.getElevatorsAvaliableLock().lock();
+		this.getFloorLock()[person.getCurrentFloor()].lock();
 		
 		try {	
 			int elevatorId = -1;
@@ -43,7 +48,7 @@ public class Building {
 				for(int i = 0; i < this.getElevators().size(); i++) {
 					elevatorId = i;
 					
-					System.out.println("Elevator check: " + elevatorId);
+					System.out.println("Checking elevator: " + elevatorId);
 					// Wait until the elevator is not on the same floor
 	//				while(person.getCurrentFloor() != this.getElevators().get(i).getCurrentFloor() ||
 	//						this.getElevators().get(i).getCurrentNumPeople() >= this.getElevators().get(i).getMaxCapacity()) { // TODO or the elevator is not going on the direction they want to go
@@ -58,8 +63,9 @@ public class Building {
 				}
 				
 				if(!canGetIn) {
+					System.out.println("Could not get in");		
 					// Wait
-					this.getAvailableCondition().await();				
+					this.getAvailableCondition()[person.getCurrentFloor()].await();				
 				}
 			}
 			
@@ -70,21 +76,22 @@ public class Building {
 		}
 		finally {
 			// Release the lock
-			this.getElevatorsAvaliableLock().unlock();			
+			this.getFloorLock()[person.getCurrentFloor()].unlock();
 		}
 	}
 	
 	/** Executes the elevator logic
 	 */
 	public void service(Elevator elevator) {
+		// Move the elevator by 1 floor
+		elevator.move();
+
 		// TODO Lock on what??
-		this.getElevatorsAvaliableLock().lock();
+		this.getFloorLock()[elevator.getCurrentFloor()].lock();
 		
 		try {
-			// Move the elevator by 1 floor
-			elevator.move();
 			
-			System.out.println("Elevator " + elevator.getId() + " arrived at floor " + elevator.getCurrentFloor());
+			System.out.println("\t\t\t\tElevator " + elevator.getId() + " arrived at floor " + elevator.getCurrentFloor());
 			
 			// Check the people that have arrived to their desired floor
 			ArrayList<Person> peopleToRemove = new ArrayList<Person>();
@@ -111,21 +118,20 @@ public class Building {
 				// TODO Now the person should sleep and continue
 			}
 			
-			
-			// TODO might not work if things happen to fast. We got: 
-			// Exception in thread "Thread-0" java.lang.NullPointerException
-			// Signal all waiting people that the elevator has arrived to a floor
-			this.availableCondition.signalAll(); 
-						
-			
 			// If the elevator has reached the last floor or the first floor, switch directions
 			if(elevator.getCurrentFloor() == this.getFloors() || elevator.getCurrentFloor() == 0) {
 				elevator.changeDirection();
 			}
+			
+			// TODO might not work if things happen to fast. We got: 
+			// Exception in thread "Thread-0" java.lang.NullPointerException
+			// Signal all waiting people that the elevator has arrived to a floor
+			this.getAvailableCondition()[elevator.getCurrentFloor()].signalAll(); 
+									
 		}
 		finally {
 			// Release the lock
-			this.getElevatorsAvaliableLock().unlock();
+			this.getFloorLock()[elevator.getCurrentFloor()].unlock();
 		}
 	}
 	
@@ -134,21 +140,12 @@ public class Building {
 	
 	public List<Elevator> getElevators() { return this.elevators; }
 
-	public Lock getElevatorsAvaliableLock() {
-		return this.elevatorsAvaliableLock;
+	public Lock[] getFloorLock() {
+		return this.floorLock;
 	}
 
-	public Condition getAvailableCondition() {
+	public Condition[] getAvailableCondition() {
 		return this.availableCondition;
-	}
-
-	// Setters
-	public void setElevatorsAvaliableLock(Lock elevatorsAvaliableLock) {
-		this.elevatorsAvaliableLock = elevatorsAvaliableLock;
-	}
-
-	public void setAvailableCondition(Condition availableCondition) {
-		this.availableCondition = availableCondition;
 	}
 	
 }

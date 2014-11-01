@@ -1,4 +1,7 @@
 import java.util.ArrayList;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Elevator implements Runnable {
 	
@@ -9,7 +12,7 @@ public class Elevator implements Runnable {
 	private int 				id;
 	private int 				currentFloor;
 	private int					direction;
-		
+			
 	public Elevator(int id, Building building) {
 		this.id = id;
 		this.peopleInElevator = new ArrayList<Person>(MAX_CAPACITY);
@@ -23,6 +26,7 @@ public class Elevator implements Runnable {
 	/** Runs the Person thread
 	 */
 	public void run() {
+
 		try {
 			while(true) { // TODO needs to stop when every person has gone to all of the floors they wanted.
 				// Move the elevator
@@ -30,11 +34,11 @@ public class Elevator implements Runnable {
 				
 				// Sleep for 1 second so that people exit and enter the elevator
 				Thread.sleep(2000);
-				System.out.println("Elevator " + this.getId() + " serviced floor " + this.getCurrentFloor());
+				System.out.println("\t\t\t\tElevator " + this.getId() + " serviced floor " + this.getCurrentFloor());
 			}
 		} catch (InterruptedException ie) {
 			ie.printStackTrace();
-		}		
+		}	
 	}
 	
 	/** Inserts a person in the elevator

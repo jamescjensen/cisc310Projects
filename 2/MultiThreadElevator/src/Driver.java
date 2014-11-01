@@ -9,7 +9,7 @@ import java.util.List;
 public class Driver {
 	
 	public static void main(String[] args) throws IOException {
-		int n = 2; // Number of elevators
+		int n = 1; // Number of elevators
 		int f = 2; // Number of floors
 		String file = "src/input.txt"; // Input file
 		
@@ -23,9 +23,7 @@ public class Driver {
 		for(int i = 0; i < people.size(); i++) {
 			new Thread(people.get(i)).start();;
 		}
-		
-
-		
+			
 	}
 	
 	/** Reads the input file and creates a person for each line

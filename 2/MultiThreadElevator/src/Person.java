@@ -1,3 +1,7 @@
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Person implements Runnable {
 		
 	private String 		name;
@@ -6,14 +10,14 @@ public class Person implements Runnable {
 	private int 		currentFloor;
 	private int 		nextFloor;
 	private int[] 		listFloor;
-	
+		
 	public Person (Building building, String personName, int waitTime, int currentFloor, int[] listFloor) {
 		this.name = personName;
 		this.building = building;
 		this.waitTime = waitTime;
 		this.currentFloor = currentFloor;
 		this.listFloor = listFloor;
-		this.nextFloor = 0;	
+		this.nextFloor = 0;			
 	}
 	
 	@Override
@@ -33,27 +37,19 @@ public class Person implements Runnable {
 				
 				// Get on the elevator
 				this.getBuilding().getOnElevator(this);
-								
-//				System.out.println("Got in elevator, destination: " + destinationFloor);
-//				System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
-				
-				
+												
 				// TODO Once the person enters the elevator, it needs to wait unitl it reaches its floor
 				while(this.getCurrentFloor() != destinationFloor) {
-//					System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
 					Thread.sleep(20);
 				}
-//				System.out.println((this.getCurrentFloor() != destinationFloor) + " - current floor: " + this.getCurrentFloor() + " - " + destinationFloor);
-//				System.out.flush();
 				
-				Thread.sleep(this.getWaitTime());
+				Thread.sleep(this.getWaitTime());	
 				this.setNextFloor(this.getNextFloor() + 1);
 			}
 		}
 		catch(InterruptedException ie) {
 			ie.printStackTrace();
-		}
-		
+		}		
 				
 	}
 	
@@ -62,7 +58,6 @@ public class Person implements Runnable {
 	 */
 	public void updateFloor(int floor) {
 		this.setCurrentFloor(floor);
-//		this.setNextFloor(this.getNextFloor() + 1);
 	}
 
 	// Getters 
