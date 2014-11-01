@@ -9,13 +9,15 @@ public class Elevator implements Runnable {
 	private int 				id;
 	private int 				currentFloor;
 	private int					direction;
+	private ArrayList<Person> 	allPeople;
 			
-	public Elevator(int id, Building building) {
-		this.id = id;
+	public Elevator(int id, Building building, ArrayList<Person> people) {
+		this.id = id; 
 		this.peopleInElevator = new ArrayList<Person>(MAX_CAPACITY);
 		this.currentFloor = 0;
 		this.building = building;
 		this.direction = 1;
+		this.allPeople = people;
 	}
 	
 	
@@ -24,7 +26,7 @@ public class Elevator implements Runnable {
 	 */
 	public void run() {
 		try {
-			while(true) { // TODO needs to stop when every person has gone to all of the floors they wanted.
+			while(!checkNotDone(this.allPeople)) {
 				// Move the elevator
 				this.getBuilding().service(this);
 				
@@ -37,6 +39,17 @@ public class Elevator implements Runnable {
 		}	
 	}
 	
+	public boolean checkNotDone(ArrayList<Person> people) {
+		boolean result = true;
+		
+		for(Person person : people) {
+			if(result && (person.getNextFloor() < person.getListFloor().length)) {
+				result = false;
+			}
+		}
+		
+		return result;
+	} 
 	/** Inserts a person in the elevator
 	 */
 	public void insertPerson(Person person) {

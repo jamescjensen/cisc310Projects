@@ -9,8 +9,8 @@ import java.util.List;
 public class Driver {
 	
 	public static void main(String[] args) throws IOException {
-		int n = 3; // Number of elevators
-		int f = 2; // Number of floors
+		int n = 2; // Number of elevators
+		int f = 3; // Number of floors
 		String file = "src/input.txt"; // Input file
 		
 		// Creating the building class which creates elevators and starts their threads
@@ -22,7 +22,7 @@ public class Driver {
 		
 		
 		for(int i = 0; i < n; i++) {
-			elevators.add(new Elevator(i, building));
+			elevators.add(new Elevator(i, building, people));
 			new Thread(elevators.get(i)).start();;
 		}
 		

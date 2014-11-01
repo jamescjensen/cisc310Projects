@@ -37,7 +37,6 @@ public class Building {
 	/** Called by the person object when they want to get on the elevator
 	 */
 	public void getOnElevator(Person person) throws InterruptedException {
-		// TODO Lock what??
 		this.getFloorLock()[person.getCurrentFloor()].lock();
 		
 		try {	
@@ -48,23 +47,38 @@ public class Building {
 				for(int i = 0; i < this.getElevators().size(); i++) {
 					elevatorId = i;
 					
-					System.out.println("\t" +person.getName() + " checking elevator: " + elevatorId);
+//					System.out.println("\t" +person.getName() + " checking elevator: " + elevatorId);
 					// Wait until the elevator is not on the same floor
 	//				while(person.getCurrentFloor() != this.getElevators().get(i).getCurrentFloor() ||
-	//						this.getElevators().get(i).getCurrentNumPeople() >= this.getElevators().get(i).getMaxCapacity()) { // TODO or the elevator is not going on the direction they want to go
+	//						this.getElevators().get(i).getCurrentNumPeople() >= this.getElevators().get(i).getMaxCapacity()) { 
 	//					// Wait
 	//					this.getAvailableCondition().await();
 	//				}
+					boolean sameDirection = true;
 					
+					int personDirection = 0;
+					personDirection = person.getListFloor()[person.getNextFloor()] - person.getCurrentFloor();
+					
+					if(personDirection > 0) {
+						if(this.getElevators().get(i).getDirection() < 0) {
+							sameDirection = false;
+						}
+					}
+					else {
+						if(this.getElevators().get(i).getDirection() > 0) {
+							sameDirection = false;
+						}
+					}
+										
 					if(person.getCurrentFloor() == this.getElevators().get(i).getCurrentFloor() &&
-							this.getElevators().get(i).getCurrentNumPeople() < this.getElevators().get(i).getMaxCapacity()) {
+							this.getElevators().get(i).getCurrentNumPeople() < this.getElevators().get(i).getMaxCapacity() &&
+							sameDirection) {
 						canGetIn = true;
 						break;
 					}
 				}
 				
-				if(!canGetIn) {
-					System.out.println("\t" + person.getName() + " could not get in");		
+				if(!canGetIn) {	
 					// Wait
 					this.getAvailableCondition()[person.getCurrentFloor()].await();				
 				}
@@ -88,7 +102,6 @@ public class Building {
 		elevator.move();
 		System.out.println("\t\t\t\tElevator " + elevator.getId() + " arrived at floor " + elevator.getCurrentFloor());
 
-		// TODO Lock on what??
 //		System.out.println(this.getFloorLock().length);
 		this.getFloorLock()[elevator.getCurrentFloor()].lock();
 		
@@ -117,7 +130,6 @@ public class Building {
 				peopleToRemove.get(j).updateFloor(elevator.getCurrentFloor());
 		
 				System.out.println(peopleToRemove.get(j).getName() + " arrived at floor " + peopleToRemove.get(j).getCurrentFloor());
-				// TODO Now the person should sleep and continue
 			}
 			
 			// If the elevator has reached the last floor or the first floor, switch directions
