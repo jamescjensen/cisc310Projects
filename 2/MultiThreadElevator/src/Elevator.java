@@ -26,7 +26,6 @@ public class Elevator implements Runnable {
 	/** Runs the Person thread
 	 */
 	public void run() {
-
 		try {
 			while(true) { // TODO needs to stop when every person has gone to all of the floors they wanted.
 				// Move the elevator

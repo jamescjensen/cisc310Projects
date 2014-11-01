@@ -14,16 +14,16 @@ public class Building {
 	private Condition[] 	availableCondition;
 	
 	public Building(int elevatorCount, int floorCount) {
-		for(int i=0;i<elevatorCount;i++){
-			elevators.add(new Elevator(i, this));
-			new Thread(elevators.get(i)).start();
-		}
+//		for(int i=0;i<elevatorCount;i++){
+//			elevators.add(new Elevator(i, this));
+//			new Thread(elevators.get(i)).start();
+//		}
 		
-		this.floors = floorCount;
-		this.floorLock = new Lock[floorCount];
-		this.availableCondition = new Condition[floorCount];
+		this.floors = floorCount + 1;
+		this.floorLock = new Lock[this.floors];
+		this.availableCondition = new Condition[this.floors];
 		
-		for(int i = 0; i < floorCount; i++) {
+		for(int i = 0; i < this.floors; i++) {
 			this.floorLock[i] = new ReentrantLock();
 			this.availableCondition[i] = this.floorLock[i].newCondition(); // Condition tied to lock
 			
@@ -87,6 +87,7 @@ public class Building {
 		elevator.move();
 
 		// TODO Lock on what??
+//		System.out.println(this.getFloorLock().length);
 		this.getFloorLock()[elevator.getCurrentFloor()].lock();
 		
 		try {
@@ -119,7 +120,7 @@ public class Building {
 			}
 			
 			// If the elevator has reached the last floor or the first floor, switch directions
-			if(elevator.getCurrentFloor() == this.getFloors() || elevator.getCurrentFloor() == 0) {
+			if(elevator.getCurrentFloor() == this.getFloors() -1 || elevator.getCurrentFloor() == 0) {
 				elevator.changeDirection();
 			}
 			
@@ -146,6 +147,11 @@ public class Building {
 
 	public Condition[] getAvailableCondition() {
 		return this.availableCondition;
+	}
+
+	public void setElevators(ArrayList<Elevator> elevators) {
+		this.elevators = elevators;
+		
 	}
 	
 }
