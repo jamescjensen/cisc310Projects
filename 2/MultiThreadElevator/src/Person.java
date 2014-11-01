@@ -1,7 +1,3 @@
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 public class Person implements Runnable {
 		
 	private String 		name;
@@ -30,7 +26,7 @@ public class Person implements Runnable {
 		try {
 			// Go through all the floor that each person wants to visit
 			for(int i = 0; i < listFloors.length; i++) {
-				System.out.println(this.getName() + " waiting on " + this.getCurrentFloor() + " for floor " + listFloors[this.getNextFloor()]);
+				System.out.println(this.getName() + " waiting on floor " + this.getCurrentFloor() + " for floor " + listFloors[this.getNextFloor()]);
 				
 				// Save the destination floor
 				int destinationFloor = this.getListFloor()[this.getNextFloor()];

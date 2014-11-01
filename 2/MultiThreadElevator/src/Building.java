@@ -48,7 +48,7 @@ public class Building {
 				for(int i = 0; i < this.getElevators().size(); i++) {
 					elevatorId = i;
 					
-					System.out.println("Checking elevator: " + elevatorId);
+					System.out.println("\t" +person.getName() + " checking elevator: " + elevatorId);
 					// Wait until the elevator is not on the same floor
 	//				while(person.getCurrentFloor() != this.getElevators().get(i).getCurrentFloor() ||
 	//						this.getElevators().get(i).getCurrentNumPeople() >= this.getElevators().get(i).getMaxCapacity()) { // TODO or the elevator is not going on the direction they want to go
@@ -59,11 +59,12 @@ public class Building {
 					if(person.getCurrentFloor() == this.getElevators().get(i).getCurrentFloor() &&
 							this.getElevators().get(i).getCurrentNumPeople() < this.getElevators().get(i).getMaxCapacity()) {
 						canGetIn = true;
+						break;
 					}
 				}
 				
 				if(!canGetIn) {
-					System.out.println("Could not get in");		
+					System.out.println("\t" + person.getName() + " could not get in");		
 					// Wait
 					this.getAvailableCondition()[person.getCurrentFloor()].await();				
 				}
@@ -85,6 +86,7 @@ public class Building {
 	public void service(Elevator elevator) {
 		// Move the elevator by 1 floor
 		elevator.move();
+		System.out.println("\t\t\t\tElevator " + elevator.getId() + " arrived at floor " + elevator.getCurrentFloor());
 
 		// TODO Lock on what??
 //		System.out.println(this.getFloorLock().length);
@@ -92,7 +94,6 @@ public class Building {
 		
 		try {
 			
-			System.out.println("\t\t\t\tElevator " + elevator.getId() + " arrived at floor " + elevator.getCurrentFloor());
 			
 			// Check the people that have arrived to their desired floor
 			ArrayList<Person> peopleToRemove = new ArrayList<Person>();
